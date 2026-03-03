@@ -25,10 +25,10 @@ export default function SuccessPage() {
           className="flex flex-col items-center gap-6 text-center"
         >
           <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center shadow-2xl shadow-primary/20">
-            <Check className="w-12 h-12 text-white stroke-[3px]" />
+            <Check className="w-12 h-12 text-surface stroke-[3px]" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-4xl font-extrabold tracking-tight">Event Live!</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight text-primary">Event Live!</h1>
             <p className="text-muted-foreground font-medium px-8">Your contribution is now visible on the map.</p>
           </div>
         </motion.div>
@@ -53,10 +53,10 @@ export default function SuccessPage() {
               </div>
               <div className="flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="bg-primary text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Meals</span>
+                  <span className="bg-primary text-surface text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Meals</span>
                   <span className="text-[10px] text-muted-foreground font-bold">Just now</span>
                 </div>
-                <h3 className="font-bold text-lg leading-tight">Free Breakfast Burritos</h3>
+                <h3 className="font-bold text-lg leading-tight text-primary">Free Breakfast Burritos</h3>
                 <div className="flex items-center gap-1 text-muted-foreground text-xs font-bold mt-1">
                   <MapPin className="w-3.5 h-3.5" />
                   Downtown Community Center

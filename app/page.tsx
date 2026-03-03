@@ -29,7 +29,7 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
     <motion.div 
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -37,15 +37,15 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="text-center"
       >
-        <h1 className="font-serif text-7xl font-bold italic tracking-tight">
-          Foody<span className="text-black not-italic">.</span>
+        <h1 className="font-serif text-7xl font-bold italic tracking-tight text-primary">
+          Foody<span className="text-primary not-italic">.</span>
         </h1>
-        <p className="mt-4 font-sans text-xs tracking-[0.3em] text-black/40 uppercase">
+        <p className="mt-4 font-sans text-xs tracking-[0.3em] text-muted-foreground uppercase">
           Find your next meal
         </p>
       </motion.div>
       <div className="absolute bottom-12">
-        <div className="w-6 h-6 border-2 border-black/10 border-t-black rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-muted border-t-primary rounded-full animate-spin" />
       </div>
     </motion.div>
   );
@@ -74,9 +74,9 @@ const Onboarding = ({ onComplete }: { onComplete: () => void }) => {
   const [current, setCurrent] = useState(0);
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-surface">
       <div className="flex justify-end p-6">
-        <button onClick={onComplete} className="text-sm font-semibold text-black/40">Skip</button>
+        <button onClick={onComplete} className="text-sm font-semibold text-muted-foreground">Skip</button>
       </div>
       
       <div className="flex-1 relative overflow-hidden">
@@ -88,11 +88,11 @@ const Onboarding = ({ onComplete }: { onComplete: () => void }) => {
             exit={{ x: -100, opacity: 0 }}
             className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center"
           >
-            <div className="w-48 h-48 bg-black/5 rounded-full flex items-center justify-center mb-10">
+            <div className="w-48 h-48 bg-muted rounded-full flex items-center justify-center mb-10 text-primary">
               {onboardingSlides[current].icon}
             </div>
-            <h2 className="text-3xl font-bold mb-4">{onboardingSlides[current].title}</h2>
-            <p className="text-black/60 leading-relaxed">
+            <h2 className="text-3xl font-bold mb-4 text-primary">{onboardingSlides[current].title}</h2>
+            <p className="text-muted-foreground leading-relaxed">
               {onboardingSlides[current].description}
             </p>
           </motion.div>
@@ -130,13 +130,13 @@ const AuthScreen = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col h-full bg-white px-6 pt-12"
+      className="flex flex-col h-full bg-surface px-6 pt-12"
     >
       <div className="mb-12">
-        <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-primary">
           Taste the<br />Neighborhood
         </h1>
-        <p className="text-black/50 font-medium">
+        <p className="text-muted-foreground font-medium">
           Join the exclusive community finding the best free food events near you.
         </p>
       </div>
@@ -193,8 +193,8 @@ const AuthScreen = () => {
       </div>
 
       <div className="mt-auto pb-10 text-center">
-        <p className="text-[10px] text-black/40 font-medium">
-          By joining, you agree to our <span className="text-black font-bold underline">Terms</span> & <span className="text-black font-bold underline">Privacy Policy</span>
+        <p className="text-[10px] text-muted-foreground font-medium">
+          By joining, you agree to our <span className="text-primary font-bold underline">Terms</span> & <span className="text-primary font-bold underline">Privacy Policy</span>
         </p>
       </div>
     </motion.div>
@@ -205,7 +205,7 @@ export default function Home() {
   const [step, setStep] = useState<'splash' | 'onboarding' | 'auth'>('splash');
 
   return (
-    <main className="h-screen w-full max-w-md mx-auto bg-white overflow-hidden relative">
+    <main className="h-screen w-full max-w-md mx-auto bg-surface overflow-hidden relative">
       <AnimatePresence mode="wait">
         {step === 'splash' && <SplashScreen key="splash" onComplete={() => setStep('onboarding')} />}
         {step === 'onboarding' && <Onboarding key="onboarding" onComplete={() => setStep('auth')} />}

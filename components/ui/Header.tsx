@@ -46,12 +46,12 @@ export const Header = ({
             onClick={handleBack}
             className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
         )}
       </div>
       
-      <h1 className="text-lg font-bold absolute left-1/2 -translate-x-1/2">
+      <h1 className="text-lg font-bold absolute left-1/2 -translate-x-1/2 text-primary">
         {title}
       </h1>
 

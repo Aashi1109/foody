@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Compass, Search, Plus, Bell, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Compass, Heart, Plus, Bell, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, useScroll, useMotionValueEvent } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,33 +12,82 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const BottomNav = () => {
+interface BottomNavProps {
+  variant?: 'light' | 'dark';
+}
+
+export const BottomNav = ({ variant = 'light' }: BottomNavProps) => {
   const pathname = usePathname();
+  const isDark = variant === 'dark';
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
 
   const navItems = [
     { href: '/explore', icon: Compass, label: 'Explore' },
-    { href: '/search', icon: Search, label: 'Search' },
+    { href: '/search', icon: Heart, label: 'Saved' },
     { href: '/create', icon: Plus, label: 'Create', isAction: true },
     { href: '/updates', icon: Bell, label: 'Updates' },
     { href: '/profile', icon: User, label: 'Profile' },
   ];
 
   return (
-    <nav className="fixed bottom-0 w-full max-w-md bg-surface/90 backdrop-blur-xl border-t border-border px-8 pt-4 pb-8 z-40 rounded-t-[2.5rem] shadow-2xl">
-      <div className="flex justify-between items-end">
+    <motion.div 
+      variants={{
+        visible: { y: 0, opacity: 1 },
+        hidden: { y: 100, opacity: 0 },
+      }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="fixed bottom-8 left-0 right-0 w-full max-w-md mx-auto px-6 z-50 pointer-events-none"
+    >
+      <nav className={cn(
+        "backdrop-blur-xl border rounded-full shadow-2xl p-2 flex items-center justify-between pointer-events-auto transition-colors duration-300",
+        isDark ? "bg-black/90 border-white/10" : "bg-surface/90 border-border"
+      )}>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
 
           if (item.isAction) {
             return (
-              <div key={item.href} className="relative -top-8">
-                <Link href={item.href}>
-                  <button className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl border-4 border-surface active:scale-95 transition-all">
-                    <Icon className="w-8 h-8" />
-                  </button>
-                </Link>
-              </div>
+              <Link key={item.href} href={item.href}>
+                <button className={cn(
+                  "w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all",
+                  isDark ? "bg-white text-black" : "bg-primary text-surface"
+                )}>
+                  <Plus className="w-6 h-6" />
+                </button>
+              </Link>
+            );
+          }
+
+          if (isActive) {
+            return (
+              <motion.div
+                key={item.href}
+                layoutId="activeTab"
+                className={cn(
+                  "shadow-sm border rounded-full px-4 py-2 flex items-center gap-2",
+                  isDark ? "bg-white/10 border-white/10" : "bg-surface border-border"
+                )}
+              >
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center",
+                  isDark ? "bg-white" : "bg-primary"
+                )}>
+                  <Icon className={cn("w-4 h-4", isDark ? "text-black" : "text-surface")} />
+                </div>
+                <span className={cn("text-xs font-bold", isDark ? "text-white" : "text-primary")}>{item.label}</span>
+              </motion.div>
             );
           }
 
@@ -46,16 +96,15 @@ export const BottomNav = () => {
               key={item.href} 
               href={item.href} 
               className={cn(
-                "flex flex-col items-center gap-1.5 transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
+                "w-10 h-10 flex items-center justify-center transition-colors",
+                isDark ? "text-white/40 hover:text-white" : "text-muted-foreground hover:text-primary"
               )}
             >
-              <Icon className="w-7 h-7" />
-              <span className="text-[10px] font-bold">{item.label}</span>
+              <Icon className="w-6 h-6" />
             </Link>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+    </motion.div>
   );
 };

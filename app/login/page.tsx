@@ -41,17 +41,17 @@ export default function LoginPage() {
         className="w-full flex flex-col gap-8 z-10 mt-12"
       >
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome back</h1>
           <p className="text-muted-foreground font-medium">Enter your password to continue</p>
         </div>
 
         {/* User Badge */}
         <div className="mx-auto flex items-center gap-3 bg-surface px-4 py-2 pr-5 rounded-full shadow-sm border border-border w-fit max-w-full">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-black shadow-inner">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-surface text-[10px] font-black shadow-inner">
             JD
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold truncate">john.doe@example.com</span>
+            <span className="text-sm font-bold truncate text-primary">john.doe@example.com</span>
           </div>
           <CheckCircle2 className="w-4 h-4 text-accent ml-1" />
         </div>

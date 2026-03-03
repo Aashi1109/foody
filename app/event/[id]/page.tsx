@@ -36,29 +36,29 @@ export default function EventDetailsPage() {
 
         <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 pt-12">
           <Link href="/explore">
-            <button className="w-10 h-10 bg-primary/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white hover:bg-primary/40 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+            <button className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors">
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
           </Link>
           <div className="flex gap-3">
-            <button className="w-10 h-10 bg-primary/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white hover:bg-primary/40 transition-colors">
-              <Heart className="w-5 h-5" />
+            <button className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors">
+              <Heart className="w-5 h-5 text-primary" />
             </button>
-            <button className="w-10 h-10 bg-primary/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white hover:bg-primary/40 transition-colors">
-              <Share2 className="w-5 h-5" />
+            <button className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors">
+              <Share2 className="w-5 h-5 text-primary" />
             </button>
           </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 z-10 p-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-primary/20">Free Event</span>
+            <span className="bg-primary text-surface text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-primary/20">Free Event</span>
             <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
               <BadgeCheck className="w-3.5 h-3.5 text-primary" />
               Verified Host
             </div>
           </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight">
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-primary">
             Downtown<br />Burger Bash
           </h1>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -94,16 +94,24 @@ export default function EventDetailsPage() {
             </div>
             <div>
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Hosted by</p>
-              <p className="text-base font-bold">Marcus Chen</p>
+              <p className="text-base font-bold text-primary">Marcus Chen</p>
             </div>
           </div>
-          <button className="w-12 h-12 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+          <button className="w-12 h-12 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-surface transition-all text-primary">
             <MessageCircle className="w-6 h-6" />
           </button>
         </div>
 
         <section>
-          <h3 className="text-lg font-bold mb-3">About the Event</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-bold text-primary">About the Event</h3>
+            <Link href="/chat/1">
+              <button className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-border text-xs font-bold hover:bg-muted transition-colors text-primary">
+                <MessageCircle className="w-4 h-4" />
+                Join Discussion
+              </button>
+            </Link>
+          </div>
           <p className="text-muted-foreground leading-relaxed font-medium">
             Come join us for a free burger tasting event! We&apos;re testing out some new spicy jalapeno smash burgers and truffle fries. First come, first served until supplies run out. Vegan options available upon request! 🍔🍟
           </p>
@@ -111,7 +119,7 @@ export default function EventDetailsPage() {
 
         <section>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Location</h3>
+            <h3 className="text-lg font-bold text-primary">Location</h3>
             <button className="text-xs font-bold text-primary underline underline-offset-4">Open in Maps</button>
           </div>
           <Card padding="none" className="relative h-44 rounded-3xl overflow-hidden grayscale border border-border">
@@ -127,10 +135,10 @@ export default function EventDetailsPage() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary rounded-full animate-pulse opacity-20" />
                   <div className="relative w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-2xl border-2 border-surface">
-                    <MapPin className="w-6 h-6 text-white" />
+                    <MapPin className="w-6 h-6 text-surface" />
                   </div>
                 </div>
-                <div className="mt-3 bg-surface px-4 py-1.5 rounded-xl text-[10px] font-bold shadow-lg border border-border uppercase tracking-widest">
+                <div className="mt-3 bg-surface px-4 py-1.5 rounded-xl text-[10px] font-bold shadow-lg border border-border uppercase tracking-widest text-primary">
                   Central Park West
                 </div>
               </div>
@@ -140,7 +148,7 @@ export default function EventDetailsPage() {
 
         <section>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Who&apos;s Going</h3>
+            <h3 className="text-lg font-bold text-primary">Who&apos;s Going</h3>
             <span className="text-xs font-bold text-muted-foreground">24 Attending</span>
           </div>
           <div className="flex -space-x-3 grayscale">

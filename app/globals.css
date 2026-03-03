@@ -1,21 +1,25 @@
 @import "tailwindcss";
 
+:root {
+  --color-surface: #FFFFFF;
+  --color-muted: #F3F4F6;
+  --color-primary: #000000;
+  --color-muted-foreground: #6B7280;
+  --color-border: #E5E7EB;
+  --color-accent: #10B981;
+}
+
 @theme {
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
 
-  /* Brand Colors */
-  --color-brand-black: #000000;
-  --color-brand-white: #FFFFFF;
-  
   /* Semantic Colors */
-  --color-primary: var(--color-brand-black);
-  --color-secondary: rgba(0, 0, 0, 0.4);
-  --color-accent: #10B981; /* Emerald for success/checks */
-  --color-surface: var(--color-brand-white);
-  --color-border: rgba(0, 0, 0, 0.05);
-  --color-muted: rgba(0, 0, 0, 0.05);
-  --color-muted-foreground: rgba(0, 0, 0, 0.3);
+  --color-primary: var(--color-primary);
+  --color-surface: var(--color-surface);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-border: var(--color-border);
+  --color-accent: var(--color-accent);
 }
 
 @layer base {

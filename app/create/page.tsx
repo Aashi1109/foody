@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Header } from '@/components/ui/Header';
 import { Card } from '@/components/ui/Card';
+import { BottomNav } from '@/components/ui/BottomNav';
 import { 
   MoreVertical, 
   CloudUpload, 
@@ -44,7 +45,7 @@ export default function CreateEventPage() {
         <div className="group relative">
           <div className="h-48 rounded-3xl border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-3 transition-all group-hover:border-primary/30 group-hover:bg-muted/80">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/20">
-              <CloudUpload className="w-6 h-6 text-white" />
+              <CloudUpload className="w-6 h-6 text-surface" />
             </div>
             <div className="text-center">
               <p className="text-sm font-bold">Upload Event Cover</p>
@@ -63,7 +64,7 @@ export default function CreateEventPage() {
               <div className="relative mb-3">
                 <div className="absolute inset-0 bg-primary rounded-full animate-pulse opacity-20" />
                 <div className="relative w-10 h-10 bg-primary border-2 border-surface rounded-full flex items-center justify-center shadow-xl">
-                  <MapPin className="w-5 h-5 text-white" />
+                  <MapPin className="w-5 h-5 text-surface" />
                 </div>
               </div>
               <div className="bg-surface/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border border-border">
@@ -84,7 +85,7 @@ export default function CreateEventPage() {
           </div>
 
           <div className="relative">
-            <select className="w-full h-14 bg-muted border-none rounded-2xl px-4 text-sm font-bold appearance-none focus:ring-2 focus:ring-primary/20 transition-all">
+            <select className="w-full h-14 bg-muted border-none rounded-2xl px-4 text-sm font-bold appearance-none focus:ring-2 focus:ring-primary/10 transition-all text-primary">
               <option disabled selected>Select Category</option>
               <option>🍕 Full Meals</option>
               <option>🥨 Snacks</option>
@@ -117,7 +118,7 @@ export default function CreateEventPage() {
             <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Notes</label>
             <textarea 
               placeholder="Dietary info, access codes, etc..."
-              className="w-full h-32 bg-muted border-none rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+              className="w-full h-32 bg-muted border-none rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 transition-all resize-none text-primary"
             />
           </div>
         </Card>
@@ -131,12 +132,13 @@ export default function CreateEventPage() {
               <Rocket className="w-5 h-5" />
               Launch Event
             </span>
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-surface/20 rounded-full flex items-center justify-center">
               <ArrowRight className="w-4 h-4" />
             </div>
           </Button>
         </Link>
       </div>
+      <BottomNav />
     </main>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { FilterDrawer } from '@/components/ui/FilterDrawer';
@@ -48,7 +49,7 @@ export default function ExplorePage() {
           <div className="relative group cursor-pointer">
             <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
             <div className="relative w-12 h-12 bg-primary border-[3px] border-surface rounded-full flex items-center justify-center shadow-xl">
-              <Pizza className="w-6 h-6 text-white" />
+              <Pizza className="w-6 h-6 text-surface" />
             </div>
           </div>
         </div>
@@ -57,7 +58,7 @@ export default function ExplorePage() {
           <div className="relative group cursor-pointer">
             <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
             <div className="relative w-10 h-10 bg-primary border-[3px] border-surface rounded-full flex items-center justify-center shadow-xl">
-              <div className="w-2 h-2 bg-white rounded-full" />
+              <div className="w-2 h-2 bg-surface rounded-full" />
             </div>
           </div>
         </div>
@@ -66,12 +67,12 @@ export default function ExplorePage() {
       {/* Header Search */}
       <div className="absolute top-0 left-0 w-full pt-12 px-5 space-y-4 z-20">
         <div className="bg-surface rounded-2xl p-2 flex items-center gap-3 shadow-xl border border-border">
-          <div className="flex-1 flex items-center gap-3 px-3">
-            <Search className="w-5 h-5 text-muted-foreground" />
-            <input 
-              type="text" 
+          <div className="flex-1">
+            <Input 
               placeholder="Find food events..." 
-              className="bg-transparent border-none focus:ring-0 text-sm font-bold w-full h-10"
+              icon={<Search className="w-5 h-5" />}
+              containerClassName="space-y-0"
+              className="h-10 rounded-xl border-none bg-transparent focus:ring-0"
             />
           </div>
           <div className="w-px h-8 bg-border" />
@@ -89,7 +90,7 @@ export default function ExplorePage() {
             <button 
               key={f.id}
               className={`flex h-10 shrink-0 items-center gap-2 px-5 rounded-full border text-xs font-bold transition-all ${
-                i === 0 ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' : 'bg-surface border-border text-primary hover:bg-muted'
+                i === 0 ? 'bg-primary border-primary text-surface shadow-lg shadow-primary/20' : 'bg-surface border-border text-primary hover:bg-muted'
               }`}
             >
               {f.icon}
@@ -107,7 +108,7 @@ export default function ExplorePage() {
         <button className="w-12 h-12 bg-surface border border-border rounded-2xl flex items-center justify-center shadow-lg hover:bg-muted transition-colors">
           <Minus className="w-5 h-5" />
         </button>
-        <button className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg mt-2 active:scale-95 transition-all">
+        <button className="w-12 h-12 bg-primary text-surface rounded-2xl flex items-center justify-center shadow-lg mt-2 active:scale-95 transition-all">
           <LocateFixed className="w-5 h-5" />
         </button>
       </div>
@@ -134,12 +135,12 @@ export default function ExplorePage() {
                     />
                   </div>
                   <div className="flex flex-col justify-center">
-                    <h3 className="text-xl font-bold leading-tight">Community Pizza Night</h3>
+                    <h3 className="text-xl font-bold leading-tight text-primary">Community Pizza Night</h3>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                       <span className="text-xs font-bold text-muted-foreground">Open · Free Entry</span>
                     </div>
-                    <div className="flex items-center gap-1.5 mt-2 text-sm font-bold">
+                    <div className="flex items-center gap-1.5 mt-2 text-sm font-bold text-primary">
                       <Timer className="w-4 h-4" />
                       45 mins remaining
                     </div>
@@ -149,7 +150,7 @@ export default function ExplorePage() {
                   onClick={() => setShowDetails(false)}
                   className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-primary" />
                 </button>
               </div>
 
@@ -175,7 +176,7 @@ export default function ExplorePage() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <BottomNav />
+      <BottomNav variant="dark" />
 
       {/* Filter Drawer */}
       <FilterDrawer 

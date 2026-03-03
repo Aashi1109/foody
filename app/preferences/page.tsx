@@ -43,14 +43,14 @@ export default function PreferencesPage() {
 
       <div className="flex-1 px-6 pt-2 space-y-10 overflow-y-auto hide-scrollbar">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Let&apos;s set up your preferences</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Let&apos;s set up your preferences</h1>
           <p className="text-muted-foreground leading-relaxed font-medium">
             Customize your feed to see the free food events you actually care about.
           </p>
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-bold">What do you like?</h2>
+          <h2 className="text-lg font-bold text-primary">What do you like?</h2>
           <div className="flex flex-wrap gap-3">
             {categories.map((cat) => (
               <button
@@ -58,7 +58,7 @@ export default function PreferencesPage() {
                 onClick={() => toggle(cat.id)}
                 className={`flex items-center gap-2 px-5 py-3 rounded-full border transition-all active:scale-95 text-sm font-bold ${
                   selected.includes(cat.id) 
-                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
+                    ? 'bg-primary border-primary text-surface shadow-lg shadow-primary/20' 
                     : 'bg-surface border-border text-primary hover:bg-muted'
                 }`}
               >
@@ -72,7 +72,7 @@ export default function PreferencesPage() {
 
         <section className="space-y-4">
           <div className="flex justify-between items-end">
-            <h2 className="text-lg font-bold">Set Your Base Location</h2>
+            <h2 className="text-lg font-bold text-primary">Set Your Base Location</h2>
             <button className="text-xs font-bold text-primary underline underline-offset-4 decoration-primary/20 hover:decoration-primary transition-all">
               Use Current Location
             </button>
@@ -99,7 +99,7 @@ export default function PreferencesPage() {
             <div className="p-5 bg-surface flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Current Selection</p>
-                <p className="text-lg font-bold">San Francisco, CA</p>
+                <p className="text-lg font-bold text-primary">San Francisco, CA</p>
               </div>
               <button className="p-2 bg-muted rounded-full hover:bg-muted/80 transition-colors">
                 <Edit2 className="w-4 h-4 text-primary" />

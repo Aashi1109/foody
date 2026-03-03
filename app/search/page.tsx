@@ -67,8 +67,8 @@ export default function SearchPage() {
       <header className="sticky top-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-border px-4 py-4 space-y-4">
         <div className="flex items-center gap-3">
           <Link href="/explore">
-            <button className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
-              <ArrowLeft className="w-6 h-6" />
+            <button className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors">
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
           </Link>
           <div className="flex-1">
@@ -86,7 +86,7 @@ export default function SearchPage() {
         </div>
 
         <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-          <button className="whitespace-nowrap px-5 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-lg shadow-primary/20">All Results</button>
+          <button className="whitespace-nowrap px-5 py-2 rounded-full bg-primary text-surface text-xs font-bold shadow-lg shadow-primary/20">All Results</button>
           <button className="whitespace-nowrap px-5 py-2 rounded-full bg-surface border border-border text-primary/60 text-xs font-bold hover:bg-muted">Nearest</button>
           <button className="whitespace-nowrap px-5 py-2 rounded-full bg-surface border border-border text-primary/60 text-xs font-bold hover:bg-muted">Closing Soon</button>
           <button className="whitespace-nowrap px-5 py-2 rounded-full bg-surface border border-border text-primary/60 text-xs font-bold hover:bg-muted">Vegan</button>
@@ -116,7 +116,7 @@ export default function SearchPage() {
                     referrerPolicy="no-referrer"
                   />
                   {event.tag && (
-                    <div className={`absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest text-white ${
+                    <div className={`absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest text-surface ${
                       event.tag === 'VEGAN' ? 'bg-accent' : 'bg-primary/60 backdrop-blur-sm'
                     }`}>
                       {event.tag}
@@ -124,7 +124,7 @@ export default function SearchPage() {
                   )}
                   {event.status === 'closed' && (
                     <div className="absolute inset-0 bg-primary/40 flex items-center justify-center">
-                      <span className="text-white text-[10px] font-black border border-white/50 px-2 py-1 rounded uppercase tracking-widest">Closed</span>
+                      <span className="text-surface text-[10px] font-black border border-surface/50 px-2 py-1 rounded uppercase tracking-widest">Closed</span>
                     </div>
                   )}
                 </div>
@@ -132,7 +132,7 @@ export default function SearchPage() {
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
                     <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-base leading-tight">{event.title}</h3>
+                      <h3 className="font-bold text-base leading-tight text-primary">{event.title}</h3>
                       <button className="text-muted-foreground hover:text-primary transition-colors">
                         <Heart className="w-5 h-5" />
                       </button>

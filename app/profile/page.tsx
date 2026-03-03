@@ -60,9 +60,9 @@ export default function ProfilePage() {
         }
       />
 
-      <div className="flex-1 px-6 pt-6 space-y-10 overflow-y-auto hide-scrollbar">
+      <div className="flex-1 px-6 pt-10 space-y-10 overflow-y-auto hide-scrollbar">
         {/* Profile Header */}
-        <Card padding="lg" className="rounded-[2.5rem] shadow-2xl border border-border flex flex-col items-center text-center">
+        <Card padding="lg" className="rounded-[2.5rem] shadow-xl border border-border flex flex-col items-center text-center">
           <div className="relative mb-6">
             <div className="w-28 h-28 rounded-full border-4 border-surface shadow-xl overflow-hidden grayscale">
               <Image 
@@ -74,24 +74,24 @@ export default function ProfilePage() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <button className="absolute bottom-1 right-1 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center border-2 border-surface shadow-lg">
+            <button className="absolute bottom-1 right-1 w-8 h-8 bg-primary text-surface rounded-full flex items-center justify-center border-2 border-surface shadow-lg">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
           </div>
-          <h2 className="text-2xl font-black mb-1">Alex Foodie</h2>
+          <h2 className="text-2xl font-black mb-1 text-primary">Alex Foodie</h2>
           <p className="text-sm font-bold text-muted-foreground mb-8">@alexrescues • Joined 2023</p>
           
           <div className="w-full flex justify-center gap-10 pt-8 border-t border-border">
             <div className="flex flex-col items-center">
-              <span className="text-xl font-black">142</span>
+              <span className="text-xl font-black text-primary">142</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">Events</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-xl font-black">28k</span>
+              <span className="text-xl font-black text-primary">28k</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">Impact</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-xl font-black">4.9</span>
+              <span className="text-xl font-black text-primary">4.9</span>
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">Rating</span>
             </div>
           </div>
@@ -99,17 +99,17 @@ export default function ProfilePage() {
 
         {/* Badges */}
         <section className="space-y-4">
-          <h3 className="text-base font-bold px-1">Badges & Achievements</h3>
+          <h3 className="text-base font-bold px-1 text-primary">Badges & Achievements</h3>
           <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold">
+            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold text-primary">
               <Trophy className="w-4 h-4 text-primary/60" />
               Top Contributor
             </div>
-            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold">
+            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold text-primary">
               <Heart className="w-4 h-4 text-primary/60" />
               Food Rescuer
             </div>
-            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold">
+            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-sm font-bold text-primary">
               <BadgeCheck className="w-4 h-4 text-primary/60" />
               Verified
             </div>
@@ -125,20 +125,20 @@ export default function ProfilePage() {
         {/* Recent Activity */}
         <section className="space-y-4">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-base font-bold">Recent Activity</h3>
+            <h3 className="text-base font-bold text-primary">Recent Activity</h3>
             <button className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors">View All</button>
           </div>
           <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1">
             {activities.map((act) => (
               <Card key={act.id} padding="lg" className="min-w-[260px] rounded-3xl shadow-xl border border-border space-y-4">
                 <div className="flex justify-between items-start">
-                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-primary">
                     {act.icon}
                   </div>
                   <span className="text-[10px] font-bold text-muted-foreground">{act.time}</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm mb-1">{act.title}</h4>
+                  <h4 className="font-bold text-sm mb-1 text-primary">{act.title}</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{act.description}</p>
                 </div>
                 <div className="flex -space-x-2 grayscale">
@@ -158,7 +158,7 @@ export default function ProfilePage() {
 
         {/* Impact Overview */}
         <Card padding="lg" className="rounded-[2.5rem] shadow-xl border border-border space-y-8">
-          <h3 className="text-base font-bold">Impact Overview</h3>
+          <h3 className="text-base font-bold text-primary">Impact Overview</h3>
           <div className="flex items-end justify-between h-40 px-2">
             {impactData.map((d, i) => (
               <div key={d.day} className="flex flex-col items-center gap-3 flex-1">
