@@ -1,0 +1,7 @@
+{
+  "name": "Foody",
+  "description": "Discover and share free food events in your neighborhood.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
