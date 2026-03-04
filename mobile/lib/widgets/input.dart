@@ -61,7 +61,7 @@ class AppInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             border: hasBorder
                 ? Border.all(
-                    color: error != null ? Colors.red : AppColors.border,
+                    color: error != null ? AppColors.error : AppColors.border,
                   )
                 : null,
           ),
@@ -119,7 +119,7 @@ class AppInput extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 2,
-                color: Colors.red,
+                color: AppColors.error,
               ),
             ),
           ),

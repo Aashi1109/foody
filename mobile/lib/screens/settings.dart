@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/theme.dart';
 import '../widgets/header.dart';
+import '../widgets/button.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -28,243 +28,200 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Profile summary
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.muted,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipOval(
-                          child: ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
-                              Colors.grey,
-                              BlendMode.saturation,
-                            ),
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  'https://picsum.photos/seed/avatar/200/200',
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'Jane Cooper',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'jane.cooper@example.com',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.mutedForeground,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _showEditPhotoOptions(context),
-                          child: Container(
-                            width: 36,
-                            height: 36,
+                  Row(
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            width: 64,
+                            height: 64,
                             decoration: BoxDecoration(
-                              color: AppColors.surface,
+                              color: AppColors.muted,
                               shape: BoxShape.circle,
                               border: Border.all(color: AppColors.border),
                             ),
-                            child: const Icon(
-                              LucideIcons.edit2,
-                              size: 16,
-                              color: AppColors.primary,
+                            child: ClipOval(
+                              child: Center(
+                                child: Icon(
+                                  LucideIcons.user,
+                                  size: 32,
+                                  color: AppColors.mutedForeground.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () => context.go('/settings/profile'),
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.surface,
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  LucideIcons.edit2,
+                                  size: 12,
+                                  color: AppColors.surface,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'Alex Johnson',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Foodie Explorer',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.mutedForeground,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 32),
 
-                  // Account
-                  _sectionLabel('ACCOUNT'),
+                  // Account Information
+                  _sectionLabel('ACCOUNT INFORMATION'),
                   const SizedBox(height: 12),
-                  _settingItem(
-                    LucideIcons.mail,
-                    'Email Address',
-                    'jane.cooper@example.com',
-                  ),
-                  _settingItem(
-                    LucideIcons.lock,
-                    'Change Password',
-                    'Last changed 30 days ago',
-                  ),
-                  _settingItem(
-                    LucideIcons.user,
-                    'Profile Details',
-                    'Name, bio, photo',
-                  ),
+                  _settingContainer([
+                    _settingItem(
+                      LucideIcons.mail,
+                      'Email',
+                      'alex.johnson@example.com',
+                      onTap: () => context.go('/settings/email'),
+                      showBorder: true,
+                    ),
+                    _settingItem(
+                      LucideIcons.lock,
+                      'Change Password',
+                      'Update your security',
+                      onTap: () => context.go('/settings/password'),
+                    ),
+                  ]),
                   const SizedBox(height: 32),
 
                   // Preferences
                   _sectionLabel('PREFERENCES'),
                   const SizedBox(height: 12),
-                  _settingItem(
-                    LucideIcons.utensils,
-                    'Cuisine Interests',
-                    'Street Food, Bakery',
-                  ),
-                  _settingItem(
-                    LucideIcons.bell,
-                    'Notifications',
-                    'Push, Email, SMS',
-                  ),
-                  _settingItem(
-                    LucideIcons.mapPin,
-                    'Default Location',
-                    'San Francisco, CA',
-                  ),
+                  _settingContainer([
+                    _settingItem(
+                      LucideIcons.utensils,
+                      'Cuisine Interests',
+                      'Vegan, Asian',
+                      onTap: () => context.go('/settings/cuisines'),
+                      showBorder: true,
+                    ),
+                    _settingItem(
+                      LucideIcons.mapPin,
+                      'Default Location',
+                      'San Francisco',
+                      onTap: () => context.go('/settings/location'),
+                      showBorder: true,
+                    ),
+                    _settingItem(
+                      LucideIcons.bell,
+                      'Notifications',
+                      'Configure alerts',
+                      onTap: () => context.go('/settings/notifications'),
+                    ),
+                  ]),
                   const SizedBox(height: 32),
 
                   // Privacy
                   _sectionLabel('PRIVACY'),
                   const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
+                  _settingContainer([
+                    _toggleItem(
+                      LucideIcons.mapPin,
+                      'Share Location',
+                      'Visible on active events',
+                      _locationSharing,
+                      (val) => setState(() => _locationSharing = val),
+                      showBorder: true,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: AppColors.muted,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            LucideIcons.locateFixed,
-                            size: 20,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'Share Location',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Allow others to see your area',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.mutedForeground,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => setState(
-                            () => _locationSharing = !_locationSharing,
-                          ),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: 48,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: _locationSharing
-                                  ? AppColors.primary
-                                  : AppColors.muted,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: AnimatedAlign(
-                              duration: const Duration(milliseconds: 300),
-                              alignment: _locationSharing
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: Container(
-                                margin: const EdgeInsets.all(4),
-                                width: 16,
-                                height: 16,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.surface,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    _settingItem(
+                      LucideIcons.shield,
+                      'Data & Privacy',
+                      'Your data controls',
+                      onTap: () => {},
                     ),
-                  ),
+                  ]),
                   const SizedBox(height: 32),
 
                   // Support
                   _sectionLabel('SUPPORT'),
                   const SizedBox(height: 12),
-                  _settingItem(
-                    LucideIcons.helpCircle,
-                    'Help Center',
-                    'FAQs and guides',
-                  ),
-                  _settingItem(
-                    LucideIcons.messageSquare,
-                    'Contact Us',
-                    'Get in touch',
-                  ),
-                  _settingItem(
-                    LucideIcons.fileText,
-                    'Terms & Privacy',
-                    'Legal documents',
-                  ),
+                  _settingContainer([
+                    _settingItem(
+                      LucideIcons.helpCircle,
+                      'Help & Support',
+                      'FAQs and guides',
+                      onTap: () => {},
+                      showBorder: true,
+                    ),
+                    _settingItem(
+                      LucideIcons.info,
+                      'About App',
+                      'v2.4.0',
+                      onTap: () => {},
+                    ),
+                  ]),
                   const SizedBox(height: 32),
 
                   // Sign out
-                  GestureDetector(
-                    onTap: () => context.go('/'),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(LucideIcons.logOut, size: 20, color: Colors.red),
-                          SizedBox(width: 12),
-                          Text(
-                            'Sign Out',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
+                  AppButton(
+                    variant: AppButtonVariant.secondary,
+                    size: AppButtonSize.xl,
+                    fullWidth: true,
+                    onPressed: () => context.go('/'),
+                    icon: const Icon(LucideIcons.logOut, size: 20),
+                    label: 'Sign Out',
+                  ),
+                  const SizedBox(height: 24),
+                  const Center(
+                    child: Text(
+                      'FOODEVENTS INC. © 2024',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2,
+                        color: AppColors.mutedForeground,
                       ),
                     ),
                   ),
@@ -277,126 +234,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showEditPhotoOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        padding: EdgeInsets.fromLTRB(
-          24,
-          12,
-          24,
-          MediaQuery.of(context).padding.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Profile Photo',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.muted,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      LucideIcons.x,
-                      size: 16,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _sheetItem(
-              label: 'View Photo',
-              icon: LucideIcons.eye,
-              onTap: () => Navigator.pop(context),
-            ),
-            _sheetItem(
-              label: 'Change Photo',
-              icon: LucideIcons.image,
-              onTap: () => Navigator.pop(context),
-            ),
-            _sheetItem(
-              label: 'Remove Photo',
-              icon: LucideIcons.trash2,
-              isDestructive: true,
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _sheetItem({
-    required String label,
-    required IconData icon,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDestructive
-              ? Colors.red.withValues(alpha: 0.05)
-              : AppColors.muted.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDestructive
-                ? Colors.red.withValues(alpha: 0.1)
-                : AppColors.border,
+  Widget _settingContainer(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: isDestructive ? Colors.red : AppColors.primary,
-              ),
-            ),
-            Icon(
-              icon,
-              size: 20,
-              color: isDestructive ? Colors.red : AppColors.primary,
-            ),
-          ],
-        ),
+        ],
       ),
+      child: Column(children: children),
     );
   }
 
@@ -415,26 +267,95 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _settingItem(IconData icon, String title, String subtitle) {
+  Widget _settingItem(
+    IconData icon,
+    String title,
+    String subtitle, {
+    VoidCallback? onTap,
+    bool showBorder = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: showBorder
+              ? const Border(bottom: BorderSide(color: AppColors.border))
+              : null,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: AppColors.muted,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 16, color: AppColors.mutedForeground),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.mutedForeground,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              LucideIcons.chevronRight,
+              size: 16,
+              color: AppColors.mutedForeground,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _toggleItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged, {
+    bool showBorder = false,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: showBorder
+            ? const Border(bottom: BorderSide(color: AppColors.border))
+            : null,
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             decoration: const BoxDecoration(
               color: AppColors.muted,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
+            child: Icon(icon, size: 16, color: AppColors.mutedForeground),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,23 +365,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.mutedForeground,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(
-            LucideIcons.chevronRight,
-            size: 20,
-            color: AppColors.mutedForeground,
+          GestureDetector(
+            onTap: () => onChanged(!value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 44,
+              height: 24,
+              decoration: BoxDecoration(
+                color: value ? AppColors.primary : AppColors.muted,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  width: 16,
+                  height: 16,
+                  decoration: const BoxDecoration(
+                    color: AppColors.surface,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

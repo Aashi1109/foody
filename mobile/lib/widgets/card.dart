@@ -43,7 +43,7 @@ class AppCard extends StatelessWidget {
       case AppCardVariant.defaultCard:
         return [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.primary.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +52,7 @@ class AppCard extends StatelessWidget {
       case AppCardVariant.glass:
         return [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
