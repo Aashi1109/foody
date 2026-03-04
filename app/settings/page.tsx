@@ -38,9 +38,11 @@ export default function SettingsPage() {
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border border-border overflow-hidden">
               <User className="w-8 h-8 text-muted-foreground/40" />
             </div>
-            <button className="absolute bottom-0 right-0 w-6 h-6 bg-primary text-surface rounded-full flex items-center justify-center border-2 border-surface shadow-sm">
-              <Edit2 className="w-3 h-3" />
-            </button>
+            <Link href="/settings/profile">
+              <button className="absolute bottom-0 right-0 w-6 h-6 bg-primary text-surface rounded-full flex items-center justify-center border-2 border-surface shadow-sm hover:scale-110 transition-transform">
+                <Edit2 className="w-3 h-3" />
+              </button>
+            </Link>
           </div>
           <div>
             <h2 className="text-xl font-bold text-primary">Alex Johnson</h2>
@@ -52,27 +54,31 @@ export default function SettingsPage() {
         <section className="space-y-3">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Account Information</h3>
           <Card padding="none" className="bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-            <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors border-b border-border group text-primary">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
-                  <Mail className="w-4 h-4" />
+            <Link href="/settings/email">
+              <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors border-b border-border group text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-sm font-bold">Email</span>
+                    <span className="block text-[10px] text-muted-foreground font-medium">alex.johnson@example.com</span>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <span className="block text-sm font-bold">Email</span>
-                  <span className="block text-[10px] text-muted-foreground font-medium">alex.johnson@example.com</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+              </button>
+            </Link>
+            <Link href="/settings/password">
+              <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold">Change Password</span>
                 </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-            </button>
-            <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group text-primary">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <span className="text-sm font-bold">Change Password</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-            </button>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+              </button>
+            </Link>
           </Card>
         </section>
 
@@ -80,18 +86,34 @@ export default function SettingsPage() {
         <section className="space-y-3">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Preferences</h3>
           <Card padding="none" className="bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-            <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors border-b border-border group text-primary">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
-                  <Utensils className="w-4 h-4" />
+            <Link href="/settings/cuisines">
+              <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors border-b border-border group text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
+                    <Utensils className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold">Cuisine Interests</span>
                 </div>
-                <span className="text-sm font-bold">Cuisine Interests</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-muted-foreground">Vegan, Asian</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-              </div>
-            </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-muted-foreground">Vegan, Asian</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                </div>
+              </button>
+            </Link>
+            <Link href="/settings/location">
+              <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors border-b border-border group text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold">Default Location</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-muted-foreground">San Francisco</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                </div>
+              </button>
+            </Link>
             <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group text-primary">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
