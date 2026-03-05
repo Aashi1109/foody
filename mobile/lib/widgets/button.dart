@@ -14,6 +14,7 @@ class AppButton extends StatelessWidget {
   final Widget? icon;
   final bool fullWidth;
   final MainAxisAlignment mainAxisAlignment;
+  final Widget? iconRight;
 
   const AppButton({
     super.key,
@@ -23,6 +24,7 @@ class AppButton extends StatelessWidget {
     this.child,
     this.label,
     this.icon,
+    this.iconRight,
     this.fullWidth = false,
     this.mainAxisAlignment = MainAxisAlignment.center,
   });
@@ -155,6 +157,16 @@ class AppButton extends StatelessWidget {
                   color: _foregroundColor,
                 ),
               ),
+            if (iconRight != null) ...[
+              const SizedBox(width: 8),
+              IconTheme(
+                data: IconThemeData(
+                  color: _foregroundColor,
+                  size: _fontSize + 4,
+                ),
+                child: iconRight!,
+              ),
+            ],
           ],
         );
 

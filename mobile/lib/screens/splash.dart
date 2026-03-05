@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,36 +10,97 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
+
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) context.go('/onboarding');
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(LucideIcons.pizza, size: 80, color: AppColors.surface),
-            SizedBox(height: 24),
-            Text(
-              'foody',
-              style: TextStyle(
-                fontFamily: 'Playfair Display',
-                fontSize: 48,
-                fontWeight: FontWeight.w900,
-                color: AppColors.surface,
-              ),
+      backgroundColor: AppColors.surface,
+      body: Stack(
+        children: [
+          Center(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _opacityAnimation.value,
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 90,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.italic,
+                              letterSpacing: -5,
+                              color: AppColors.primary,
+                            ),
+                            children: const [
+                              TextSpan(text: 'Foody'),
+                              TextSpan(
+                                text: '.',
+                                style: TextStyle(fontStyle: FontStyle.normal),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'FIND YOUR NEXT MEAL',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 8,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

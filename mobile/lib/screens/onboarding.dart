@@ -57,20 +57,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.mutedForeground,
-                    ), 
-                  ), 
-                ), 
-              ), 
-            ), 
-          ), 
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
 
           // Content
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: _buildSlide(_slides[_current]),
-            ), 
-          ), 
+            ),
+          ),
 
           // Dots + Button
           Padding(
@@ -91,10 +91,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? AppColors.primary
                             : AppColors.muted,
                         borderRadius: BorderRadius.circular(3),
-                      ), 
+                      ),
                     );
                   }),
-                ), 
+                ),
                 const SizedBox(height: 32),
 
                 // Button
@@ -102,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   size: AppButtonSize.lg,
                   fullWidth: true,
                   label: _current == 2 ? 'Get Started' : 'Continue',
-                  icon: const Icon(LucideIcons.chevronRight),
+                  iconRight: const Icon(LucideIcons.chevronRight),
                   onPressed: () {
                     if (_current < 2) {
                       setState(() => _current++);
@@ -110,10 +110,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       widget.onComplete();
                     }
                   },
-                ), 
+                ),
               ],
-            ), 
-          ), 
+            ),
+          ),
         ],
       ),
     );
@@ -130,9 +130,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: const BoxDecoration(
             color: AppColors.muted,
             shape: BoxShape.circle,
-          ), 
+          ),
           child: Icon(slide.icon, size: 80, color: AppColors.primary),
-        ), 
+        ),
         const SizedBox(height: 40),
         Text(
           slide.title,
@@ -140,8 +140,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             fontSize: 28,
             fontWeight: FontWeight.w700,
             color: AppColors.primary,
-          ), 
-        ), 
+          ),
+        ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -152,9 +152,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               fontSize: 16,
               color: AppColors.mutedForeground,
               height: 1.5,
-            ), 
-          ), 
-        ), 
+            ),
+          ),
+        ),
       ],
     );
   }

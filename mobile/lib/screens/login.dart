@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onBack: () => context.go('/auth'),
                   title: '',
                   showBorder: false,
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: AppColors.transparent,
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -247,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           size: AppButtonSize.lg,
                           fullWidth: true,
                           label: 'Log In',
-                          icon: const Icon(LucideIcons.arrowRight),
+                          iconRight: const Icon(LucideIcons.arrowRight),
                           onPressed: () => context.go('/preferences'),
                         ),
                         const SizedBox(height: 16),

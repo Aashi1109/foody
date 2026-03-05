@@ -33,7 +33,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         bottom: 16,
       ),
       decoration: BoxDecoration(
-        color: (backgroundColor ?? AppColors.surface).withValues(alpha: 0.9),
+        color: backgroundColor ?? AppColors.surface.withValues(alpha: 0.9),
         border: showBorder
             ? const Border(bottom: BorderSide(color: AppColors.border))
             : null,
