@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
+import '../widgets/floating_message_bar.dart';
 
 class ChatScreen extends StatefulWidget {
   final String id;
@@ -13,10 +15,38 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  bool _isInputVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      if (_isInputVisible) {
+        setState(() {
+          _isInputVisible = false;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      if (!_isInputVisible) {
+        setState(() {
+          _isInputVisible = true;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -31,6 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
               _buildHeader(context),
               Expanded(
                 child: ListView(
+                  controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
                   children: [
                     _buildTimestamp('Today, 10:23 AM'),
@@ -62,7 +93,17 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           ),
-          _buildInputBar(),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: FloatingMessageBar(
+              isVisible: _isInputVisible,
+              onSend: (msg, files) {
+                print('Sending message: $msg with ${files.length} files');
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -604,98 +645,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildInputBar() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          MediaQuery.of(context).padding.bottom + 16,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: const BoxDecoration(
-                color: AppColors.muted,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                LucideIcons.plus,
-                size: 24,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.muted,
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Message...',
-                          hintStyle: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.mutedForeground,
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
-                        ),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                    const Icon(
-                      LucideIcons.smile,
-                      size: 20,
-                      color: AppColors.mutedForeground,
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        LucideIcons.send,
-                        size: 14,
-                        color: AppColors.surface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -68,12 +68,13 @@ export default function FloatingMessageBar({
   };
 
   const addMockAttachment = () => {
+    if (attachments.length >= 5) return;
     const newAttachment: Attachment = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: "file_name.jpg",
-      url: "https://picsum.photos/seed/attachment/100/100",
+      id: Date.now().toString(),
+      name: "image.jpg",
+      url: "https://picsum.photos/seed/" + Date.now() + "/100/100",
     };
-    setAttachments((prev) => [...prev, newAttachment]);
+    setAttachments([...attachments, newAttachment]);
     setIsVisible(true);
   };
 
