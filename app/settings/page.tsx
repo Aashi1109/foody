@@ -114,15 +114,17 @@ export default function SettingsPage() {
                 </div>
               </button>
             </Link>
-            <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group text-primary">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
-                  <Bell className="w-4 h-4" />
+            <Link href="/settings/notifications">
+              <button className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors group text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-surface transition-colors">
+                    <Bell className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-bold">Notifications</span>
                 </div>
-                <span className="text-sm font-bold">Notifications</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-            </button>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+              </button>
+            </Link>
           </Card>
         </section>
 
