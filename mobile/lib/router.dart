@@ -23,81 +23,97 @@ import 'screens/settings/notifications.dart';
 import 'screens/updates.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: SplashScreen.routePath,
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(
-      path: '/onboarding',
-      builder: (context, state) =>
-          OnboardingScreen(onComplete: () => context.go('/auth')),
+      path: SplashScreen.routePath,
+      builder: (context, state) => const SplashScreen(),
     ),
-    GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
-      path: '/preferences',
+      path: OnboardingScreen.routePath,
+      builder: (context, state) =>
+          OnboardingScreen(onComplete: () => context.go(AuthScreen.routePath)),
+    ),
+    GoRoute(
+      path: AuthScreen.routePath,
+      builder: (context, state) => const AuthScreen(),
+    ),
+    GoRoute(
+      path: LoginScreen.routePath,
+      builder: (context, state) {
+        final email =
+            state.uri.queryParameters['email'] ?? 'john.doe@example.com';
+        return LoginScreen(email: email);
+      },
+    ),
+    GoRoute(
+      path: PreferencesScreen.routePath,
       builder: (context, state) => const PreferencesScreen(),
     ),
     GoRoute(
-      path: '/explore',
+      path: ExploreScreen.routePath,
       builder: (context, state) => const ExploreScreen(),
     ),
-    GoRoute(path: '/search', builder: (context, state) => const SearchScreen()),
     GoRoute(
-      path: '/event/:id',
+      path: SearchScreen.routePath,
+      builder: (context, state) => const SearchScreen(),
+    ),
+    GoRoute(
+      path: EventDetailScreen.routePath,
       builder: (context, state) =>
           EventDetailScreen(id: state.pathParameters['id']!),
     ),
     GoRoute(
-      path: '/create',
+      path: CreateEventScreen.routePath,
       builder: (context, state) => const CreateEventScreen(),
     ),
     GoRoute(
-      path: '/success',
+      path: SuccessScreen.routePath,
       builder: (context, state) => const SuccessScreen(),
     ),
     GoRoute(
-      path: '/chat/:id',
+      path: ChatScreen.routePath,
       builder: (context, state) => ChatScreen(id: state.pathParameters['id']!),
     ),
     GoRoute(
-      path: '/thread/:id',
+      path: ThreadScreen.routePath,
       builder: (context, state) =>
           ThreadScreen(id: state.pathParameters['id']!),
     ),
     GoRoute(
-      path: '/profile',
+      path: ProfileScreen.routePath,
       builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
-      path: '/settings',
+      path: SettingsScreen.routePath,
       builder: (context, state) => const SettingsScreen(),
     ),
     GoRoute(
-      path: '/settings/profile',
+      path: ProfileDetailsScreen.routePath,
       builder: (context, state) => const ProfileDetailsScreen(),
     ),
     GoRoute(
-      path: '/settings/location',
+      path: LocationSettingsScreen.routePath,
       builder: (context, state) => const LocationSettingsScreen(),
     ),
     GoRoute(
-      path: '/settings/password',
+      path: PasswordSettingsScreen.routePath,
       builder: (context, state) => const PasswordSettingsScreen(),
     ),
     GoRoute(
-      path: '/settings/email',
+      path: EmailSettingsScreen.routePath,
       builder: (context, state) => const EmailSettingsScreen(),
     ),
     GoRoute(
-      path: '/settings/cuisines',
+      path: CuisineInterestsScreen.routePath,
       builder: (context, state) => const CuisineInterestsScreen(),
     ),
     GoRoute(
-      path: '/settings/notifications',
+      path: NotificationsSettingsScreen.routePath,
       builder: (context, state) => const NotificationsSettingsScreen(),
     ),
     GoRoute(
-      path: '/updates',
+      path: UpdatesScreen.routePath,
       builder: (context, state) => const UpdatesScreen(),
     ),
   ],

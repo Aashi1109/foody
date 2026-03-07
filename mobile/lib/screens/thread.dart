@@ -7,7 +7,10 @@ import '../theme/theme.dart';
 import '../widgets/header.dart';
 import '../widgets/floating_message_bar.dart';
 
+import 'chat.dart';
+
 class ThreadScreen extends StatefulWidget {
+  static const String routePath = '/thread/:id';
   final String id;
   const ThreadScreen({super.key, required this.id});
 
@@ -60,7 +63,8 @@ class _ThreadScreenState extends State<ThreadScreen> {
             children: [
               AppHeader(
                 title: 'Thread',
-                onBack: () => context.go('/chat/1'),
+                onBack: () =>
+                    context.go(ChatScreen.routePath.replaceAll(':id', '1')),
                 rightElement: Container(
                   width: 40,
                   height: 40,

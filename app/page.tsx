@@ -136,6 +136,7 @@ const Onboarding = ({ onComplete }: { onComplete: () => void }) => {
 // --- Auth Screen ---
 const AuthScreen = ({ onBack }: { onBack: () => void }) => {
   const [nearMe, setNearMe] = useState(true);
+  const [email, setEmail] = useState("");
 
   return (
     <motion.div
@@ -163,8 +164,17 @@ const AuthScreen = ({ onBack }: { onBack: () => void }) => {
 
       <div className="bg-muted rounded-[2.5rem] p-6 mb-6">
         <div className="space-y-4">
-          <Input label="Email" type="email" placeholder="chef@foodie.com" />
-          <Link href="/login" className="block">
+          <Input
+            label="Email"
+            type="email"
+            placeholder="chef@foodie.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Link
+            href={`/login?email=${encodeURIComponent(email)}`}
+            className="block"
+          >
             <Button size="lg" className="w-full">
               Continue
               <ArrowRight className="w-4 h-4" />

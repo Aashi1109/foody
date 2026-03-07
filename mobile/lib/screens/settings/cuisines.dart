@@ -5,6 +5,7 @@ import '../../theme/theme.dart';
 import '../../widgets/header.dart';
 import '../../widgets/button.dart';
 import '../../widgets/input.dart';
+import '../settings.dart';
 
 class Cuisine {
   final String id;
@@ -21,6 +22,7 @@ class Cuisine {
 }
 
 class CuisineInterestsScreen extends StatefulWidget {
+  static const String routePath = '/settings/cuisines';
   const CuisineInterestsScreen({super.key});
 
   @override
@@ -87,7 +89,7 @@ class _CuisineInterestsScreenState extends State<CuisineInterestsScreen> {
         children: [
           AppHeader(
             title: 'Cuisine Interests',
-            onBack: () => context.go('/settings'),
+            onBack: () => context.go(SettingsScreen.routePath),
           ),
           Expanded(
             child: SingleChildScrollView(

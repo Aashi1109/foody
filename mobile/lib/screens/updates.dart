@@ -5,6 +5,7 @@ import '../widgets/header.dart';
 import '../widgets/bottom_nav.dart';
 
 class UpdatesScreen extends StatelessWidget {
+  static const String routePath = '/updates';
   const UpdatesScreen({super.key});
 
   @override
@@ -26,10 +27,10 @@ class UpdatesScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: AppColors.primary,
                       decoration: TextDecoration.underline,
-                    ), 
-                  ), 
-                ), 
-              ), 
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
@@ -41,11 +42,11 @@ class UpdatesScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 8,
-                        ), 
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.primary,
                           borderRadius: BorderRadius.circular(50),
-                        ), 
+                        ),
                         child: const Text(
                           '3 UNREAD',
                           style: TextStyle(
@@ -53,9 +54,9 @@ class UpdatesScreen extends StatelessWidget {
                             fontWeight: FontWeight.w900,
                             letterSpacing: 2,
                             color: AppColors.surface,
-                          ), 
-                        ), 
-                      ), 
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 24),
 
                       _sectionLabel('TODAY'),
@@ -67,7 +68,7 @@ class UpdatesScreen extends StatelessWidget {
                         '2m ago',
                         true,
                         AppColors.primary,
-                      ), 
+                      ),
                       _notif(
                         LucideIcons.mapPin,
                         'New event near you',
@@ -75,7 +76,7 @@ class UpdatesScreen extends StatelessWidget {
                         '15m ago',
                         true,
                         AppColors.accent,
-                      ), 
+                      ),
                       _notif(
                         LucideIcons.award,
                         'Achievement unlocked!',
@@ -83,7 +84,7 @@ class UpdatesScreen extends StatelessWidget {
                         '1h ago',
                         true,
                         const Color(0xFFD97706),
-                      ), 
+                      ),
                       const SizedBox(height: 32),
 
                       _sectionLabel('EARLIER'),
@@ -95,7 +96,7 @@ class UpdatesScreen extends StatelessWidget {
                         '3h ago',
                         false,
                         AppColors.mutedForeground,
-                      ), 
+                      ),
                       _notif(
                         LucideIcons.heart,
                         'Your event got 12 saves',
@@ -103,7 +104,7 @@ class UpdatesScreen extends StatelessWidget {
                         '5h ago',
                         false,
                         AppColors.mutedForeground,
-                      ), 
+                      ),
                       _notif(
                         LucideIcons.users,
                         'Marcus joined your event',
@@ -111,7 +112,7 @@ class UpdatesScreen extends StatelessWidget {
                         '8h ago',
                         false,
                         AppColors.mutedForeground,
-                      ), 
+                      ),
                       _notif(
                         LucideIcons.checkCircle2,
                         'Event completed',
@@ -119,13 +120,13 @@ class UpdatesScreen extends StatelessWidget {
                         '1d ago',
                         false,
                         AppColors.mutedForeground,
-                      ), 
+                      ),
                     ],
-                  ), 
-                ), 
-              ), 
+                  ),
+                ),
+              ),
             ],
-          ), 
+          ),
           const AppBottomNav(),
         ],
       ),
@@ -142,7 +143,7 @@ class UpdatesScreen extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: 2,
           color: AppColors.mutedForeground,
-        ), 
+        ),
       ),
     );
   }
@@ -176,13 +177,13 @@ class UpdatesScreen extends StatelessWidget {
                   ? accentColor.withValues(alpha: 0.1)
                   : AppColors.muted,
               shape: BoxShape.circle,
-            ), 
+            ),
             child: Icon(
               icon,
               size: 20,
               color: unread ? accentColor : AppColors.mutedForeground,
-            ), 
-          ), 
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -202,9 +203,9 @@ class UpdatesScreen extends StatelessWidget {
                           color: unread
                               ? AppColors.primary
                               : AppColors.mutedForeground,
-                        ), 
-                      ), 
-                    ), 
+                        ),
+                      ),
+                    ),
                     if (unread)
                       Container(
                         width: 8,
@@ -212,10 +213,10 @@ class UpdatesScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: accentColor,
                           shape: BoxShape.circle,
-                        ), 
-                      ), 
+                        ),
+                      ),
                   ],
-                ), 
+                ),
                 const SizedBox(height: 4),
                 Text(
                   body,
@@ -225,9 +226,9 @@ class UpdatesScreen extends StatelessWidget {
                     fontSize: 12,
                     color: AppColors.mutedForeground.withValues(
                       alpha: unread ? 1 : 0.7,
-                    ), 
-                  ), 
-                ), 
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   time,
@@ -235,11 +236,11 @@ class UpdatesScreen extends StatelessWidget {
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: AppColors.mutedForeground,
-                  ), 
-                ), 
+                  ),
+                ),
               ],
-            ), 
-          ), 
+            ),
+          ),
         ],
       ),
     );

@@ -4,9 +4,15 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../widgets/header.dart';
+import '../services/auth.dart';
+
+import 'auth.dart';
+import 'explore.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  static const String routePath = '/login';
+  final String email;
+  const LoginScreen({super.key, this.email = 'john.doe@example.com'});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,13 +20,38 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _showPassword = false;
+  bool _isLoading = false;
   final TextEditingController _passwordController = TextEditingController();
-  final String _email = 'john.doe@example.com';
 
   @override
   void dispose() {
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (_passwordController.text.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    final response = await authService.login(
+      widget.email,
+      _passwordController.text,
+    );
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+      if (response.data != null) {
+        context.go(ExploreScreen.routePath);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.error ?? 'Login failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -73,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 AppHeader(
-                  onBack: () => context.go('/auth'),
+                  onBack: () => context.go(AuthScreen.routePath),
                   title: '',
                   showBorder: false,
                   backgroundColor: AppColors.transparent,
@@ -130,10 +161,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      'JD',
-                                      style: TextStyle(
+                                      widget.email.isNotEmpty
+                                          ? widget.email[0].toUpperCase()
+                                          : 'U',
+                                      style: const TextStyle(
                                         color: AppColors.surface,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w900,
@@ -143,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  _email,
+                                  widget.email,
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
@@ -173,6 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _passwordController,
                             obscureText: !_showPassword,
                             onChanged: (_) => setState(() {}),
+                            enabled: !_isLoading,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -246,9 +280,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppButton(
                           size: AppButtonSize.lg,
                           fullWidth: true,
-                          label: 'Log In',
-                          iconRight: const Icon(LucideIcons.arrowRight),
-                          onPressed: () => context.go('/preferences'),
+                          label: _isLoading ? 'Logging In...' : 'Log In',
+                          iconRight: _isLoading
+                              ? null
+                              : const Icon(LucideIcons.arrowRight),
+                          onPressed:
+                              (_isLoading ||
+                                  _passwordController.text.isEmpty ||
+                                  !requirements.every((r) => r['met'] as bool))
+                              ? null
+                              : _handleLogin,
                         ),
                         const SizedBox(height: 16),
                         TextButton(

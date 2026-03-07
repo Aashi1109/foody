@@ -4,13 +4,83 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
+import '../services/event.dart';
+import '../models/event.dart';
 
-class EventDetailScreen extends StatelessWidget {
+import 'explore.dart';
+import 'chat.dart';
+
+class EventDetailScreen extends StatefulWidget {
+  static const String routePath = '/event/:id';
   final String id;
   const EventDetailScreen({super.key, required this.id});
 
   @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  Event? _event;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEvent();
+  }
+
+  Future<void> _loadEvent() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await eventService.getEvents();
+    if (mounted) {
+      if (response.error != null) {
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        final events = response.data?.items ?? [];
+        final event = events.firstWhere(
+          (e) => e.id == widget.id,
+          orElse: () => events.isNotEmpty ? events.first : null as dynamic,
+        );
+        setState(() {
+          _event = event;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    if (_event == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Event not found'),
+              TextButton(
+                onPressed: () => context.go(ExploreScreen.routePath),
+                child: const Text('Go Back'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: Stack(
@@ -25,7 +95,9 @@ class EventDetailScreen extends StatelessWidget {
                   child: Stack(
                     children: [
                       CachedNetworkImage(
-                        imageUrl: 'https://picsum.photos/seed/burger/800/800',
+                        imageUrl: _event!.media?.isNotEmpty == true
+                            ? _event!.media!.first.url
+                            : 'https://picsum.photos/seed/${_event!.id}/800/800',
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 420,
@@ -59,7 +131,7 @@ class EventDetailScreen extends StatelessWidget {
                             children: [
                               _circleButton(
                                 LucideIcons.arrowLeft,
-                                () => context.go('/explore'),
+                                () => context.go(ExploreScreen.routePath),
                               ),
                               Row(
                                 children: [
@@ -103,9 +175,9 @@ class EventDetailScreen extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    child: const Text(
-                                      'FREE EVENT',
-                                      style: TextStyle(
+                                    child: Text(
+                                      _event!.status.toUpperCase(),
+                                      style: const TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w900,
                                         letterSpacing: 2,
@@ -135,9 +207,9 @@ class EventDetailScreen extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              const Text(
-                                'Downtown\nBurger Bash',
-                                style: TextStyle(
+                              Text(
+                                _event!.name,
+                                style: const TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.w800,
                                   height: 1.1,
@@ -150,9 +222,14 @@ class EventDetailScreen extends StatelessWidget {
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  _infoPill(LucideIcons.timer, '1h 30m Left'),
-                                  _infoPill(LucideIcons.utensils, 'Fast Food'),
-                                  _infoPill(LucideIcons.navigation, '0.5 mi'),
+                                  _infoPill(LucideIcons.timer, 'Active'),
+                                  _infoPill(
+                                    LucideIcons.utensils,
+                                    _event!.tags?.isNotEmpty == true
+                                        ? _event!.tags!.first.name
+                                        : 'Food',
+                                  ),
+                                  _infoPill(LucideIcons.navigation, 'Nearby'),
                                 ],
                               ),
                             ],
@@ -219,7 +296,7 @@ class EventDetailScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    'Marcus Chen',
+                                    'Host User',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -259,7 +336,12 @@ class EventDetailScreen extends StatelessWidget {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () => context.go('/chat/1'),
+                              onTap: () => context.go(
+                                ChatScreen.routePath.replaceAll(
+                                  ':id',
+                                  _event!.id.toString(),
+                                ),
+                              ),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -293,9 +375,9 @@ class EventDetailScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          "Come join us for a free burger tasting event! We're testing out some new spicy jalapeno smash burgers and truffle fries. First come, first served until supplies run out. Vegan options available upon request! 🍔🍟",
-                          style: TextStyle(
+                        Text(
+                          _event!.description ?? "No description provided.",
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: AppColors.mutedForeground,
@@ -307,8 +389,8 @@ class EventDetailScreen extends StatelessWidget {
                         // Location
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               'Location',
                               style: TextStyle(
                                 fontSize: 18,
@@ -387,9 +469,10 @@ class EventDetailScreen extends StatelessWidget {
                                             color: AppColors.border,
                                           ),
                                         ),
-                                        child: const Text(
-                                          'CENTRAL PARK WEST',
-                                          style: TextStyle(
+                                        child: Text(
+                                          _event!.location.address
+                                              .toUpperCase(),
+                                          style: const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 2,

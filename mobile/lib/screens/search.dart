@@ -6,7 +6,11 @@ import '../theme/theme.dart';
 import '../widgets/input.dart';
 import '../widgets/bottom_nav.dart';
 
+import 'explore.dart';
+import 'event_detail.dart';
+
 class SearchScreen extends StatelessWidget {
+  static const String routePath = '/search';
   const SearchScreen({super.key});
 
   static final _events = [
@@ -67,19 +71,19 @@ class SearchScreen extends StatelessWidget {
                   left: 16,
                   right: 16,
                   bottom: 16,
-                ), 
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surface.withValues(alpha: 0.9),
                   border: const Border(
                     bottom: BorderSide(color: AppColors.border),
-                  ), 
-                ), 
+                  ),
+                ),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () => context.go('/explore'),
+                          onTap: () => context.go(ExploreScreen.routePath),
                           child: Container(
                             width: 40,
                             height: 40,
@@ -92,16 +96,16 @@ class SearchScreen extends StatelessWidget {
                                   color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
-                                ), 
+                                ),
                               ],
-                            ), 
+                            ),
                             child: const Icon(
                               LucideIcons.arrowLeft,
                               size: 20,
                               color: AppColors.primary,
-                            ), 
-                          ), 
-                        ), 
+                            ),
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: AppInput(
@@ -109,8 +113,8 @@ class SearchScreen extends StatelessWidget {
                             icon: const Icon(LucideIcons.search, size: 20),
                             height: 48,
                             borderRadius: 50,
-                          ), 
-                        ), 
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Stack(
                           children: [
@@ -120,8 +124,8 @@ class SearchScreen extends StatelessWidget {
                                 LucideIcons.slidersHorizontal,
                                 size: 24,
                                 color: AppColors.primary,
-                              ), 
-                            ), 
+                              ),
+                            ),
                             Positioned(
                               top: 8,
                               right: 8,
@@ -131,13 +135,13 @@ class SearchScreen extends StatelessWidget {
                                 decoration: const BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
-                                ), 
-                              ), 
-                            ), 
+                                ),
+                              ),
+                            ),
                           ],
-                        ), 
+                        ),
                       ],
-                    ), 
+                    ),
                     const SizedBox(height: 16),
                     // Filter chips
                     SizedBox(
@@ -153,11 +157,11 @@ class SearchScreen extends StatelessWidget {
                           const SizedBox(width: 8),
                           _chipBtn('Vegan', false),
                         ],
-                      ), 
-                    ), 
+                      ),
+                    ),
                   ],
-                ), 
-              ), 
+                ),
+              ),
 
               // Content
               Expanded(
@@ -177,10 +181,10 @@ class SearchScreen extends StatelessWidget {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.mutedForeground,
-                              ), 
-                            ), 
+                              ),
+                            ),
                             GestureDetector(
-                              onTap: () => context.go('/explore'),
+                              onTap: () => context.go(ExploreScreen.routePath),
                               child: const Text(
                                 'Map View',
                                 style: TextStyle(
@@ -188,12 +192,12 @@ class SearchScreen extends StatelessWidget {
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.primary,
                                   decoration: TextDecoration.underline,
-                                ), 
-                              ), 
-                            ), 
+                                ),
+                              ),
+                            ),
                           ],
-                        ), 
-                      ), 
+                        ),
+                      ),
                       const SizedBox(height: 16),
 
                       // Event cards
@@ -202,17 +206,22 @@ class SearchScreen extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: GestureDetector(
-                            onTap: () => context.go('/event/${e.id}'),
+                            onTap: () => context.go(
+                              EventDetailScreen.routePath.replaceAll(
+                                ':id',
+                                e.id.toString(),
+                              ),
+                            ),
                             child: _buildEventCard(e),
-                          ), 
+                          ),
                         );
                       }),
                     ],
-                  ), 
-                ), 
-              ), 
+                  ),
+                ),
+              ),
             ],
-          ), 
+          ),
           const AppBottomNav(),
         ],
       ),
@@ -234,9 +243,9 @@ class SearchScreen extends StatelessWidget {
               color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
-            ), 
+            ),
           ],
-        ), 
+        ),
         child: Row(
           children: [
             // Image
@@ -256,14 +265,14 @@ class SearchScreen extends StatelessWidget {
                           : const ColorFilter.mode(
                               Colors.transparent,
                               BlendMode.multiply,
-                            ), 
+                            ),
                       child: CachedNetworkImage(
                         imageUrl: e.image,
                         fit: BoxFit.cover,
                         width: 96,
                         height: 96,
-                      ), 
-                    ), 
+                      ),
+                    ),
                     if (e.tag != null && !isClosed)
                       Positioned(
                         top: 6,
@@ -272,13 +281,13 @@ class SearchScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 2,
-                          ), 
+                          ),
                           decoration: BoxDecoration(
                             color: e.tag == 'VEGAN'
                                 ? AppColors.accent
                                 : AppColors.primary.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(50),
-                          ), 
+                          ),
                           child: Text(
                             e.tag!,
                             style: const TextStyle(
@@ -286,10 +295,10 @@ class SearchScreen extends StatelessWidget {
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.5,
                               color: AppColors.surface,
-                            ), 
-                          ), 
-                        ), 
-                      ), 
+                            ),
+                          ),
+                        ),
+                      ),
                     if (isClosed)
                       Container(
                         color: AppColors.primary.withValues(alpha: 0.4),
@@ -301,14 +310,14 @@ class SearchScreen extends StatelessWidget {
                               fontWeight: FontWeight.w900,
                               letterSpacing: 2,
                               color: AppColors.surface,
-                            ), 
-                          ), 
-                        ), 
-                      ), 
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
-                ), 
-              ), 
-            ), 
+                ),
+              ),
+            ),
             const SizedBox(width: 16),
 
             // Info
@@ -327,16 +336,16 @@ class SearchScreen extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                             height: 1.2,
                             color: AppColors.primary,
-                          ), 
-                        ), 
-                      ), 
+                          ),
+                        ),
+                      ),
                       const Icon(
                         LucideIcons.heart,
                         size: 20,
                         color: AppColors.mutedForeground,
-                      ), 
+                      ),
                     ],
-                  ), 
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     e.description,
@@ -345,8 +354,8 @@ class SearchScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.mutedForeground,
-                    ), 
-                  ), 
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -356,7 +365,7 @@ class SearchScreen extends StatelessWidget {
                             LucideIcons.navigation,
                             size: 16,
                             color: AppColors.primary,
-                          ), 
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             e.distance,
@@ -364,10 +373,10 @@ class SearchScreen extends StatelessWidget {
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: AppColors.primary,
-                            ), 
-                          ), 
+                            ),
+                          ),
                         ],
-                      ), 
+                      ),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 12),
                         width: 4,
@@ -375,13 +384,13 @@ class SearchScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.border,
                           shape: BoxShape.circle,
-                        ), 
-                      ), 
+                        ),
+                      ),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 2,
-                        ), 
+                        ),
                         decoration: BoxDecoration(
                           color: e.status == 'urgent'
                               ? const Color(0xFFFFFBEB)
@@ -389,7 +398,7 @@ class SearchScreen extends StatelessWidget {
                               ? const Color(0xFFECFDF5)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(6),
-                        ), 
+                        ),
                         child: Row(
                           children: [
                             if (e.status == 'urgent')
@@ -397,13 +406,13 @@ class SearchScreen extends StatelessWidget {
                                 LucideIcons.timer,
                                 size: 14,
                                 color: const Color(0xFFD97706),
-                              ), 
+                              ),
                             if (e.status == 'new')
                               Icon(
                                 LucideIcons.checkCircle2,
                                 size: 14,
                                 color: const Color(0xFF059669),
-                              ), 
+                              ),
                             if (e.status == 'urgent' || e.status == 'new')
                               const SizedBox(width: 4),
                             Text(
@@ -416,18 +425,18 @@ class SearchScreen extends StatelessWidget {
                                     : e.status == 'new'
                                     ? const Color(0xFF059669)
                                     : AppColors.mutedForeground,
-                              ), 
-                            ), 
+                              ),
+                            ),
                           ],
-                        ), 
-                      ), 
+                        ),
+                      ),
                     ],
-                  ), 
+                  ),
                 ],
-              ), 
-            ), 
+              ),
+            ),
           ],
-        ), 
+        ),
       ),
     );
   }
@@ -445,7 +454,7 @@ class SearchScreen extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
-                ), 
+                ),
               ]
             : null,
       ),
@@ -457,7 +466,7 @@ class SearchScreen extends StatelessWidget {
           color: selected
               ? AppColors.surface
               : AppColors.primary.withValues(alpha: 0.6),
-        ), 
+        ),
       ),
     );
   }

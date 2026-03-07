@@ -5,9 +5,74 @@ import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../widgets/input.dart';
 import '../widgets/header.dart';
+import '../services/event.dart';
+import 'explore.dart';
+import 'success.dart';
 
-class CreateEventScreen extends StatelessWidget {
+class CreateEventScreen extends StatefulWidget {
+  static const String routePath = '/create';
   const CreateEventScreen({super.key});
+
+  @override
+  State<CreateEventScreen> createState() => _CreateEventScreenState();
+}
+
+class _CreateEventScreenState extends State<CreateEventScreen> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _startTimeController = TextEditingController();
+  final _endTimeController = TextEditingController();
+
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleCreate() async {
+    if (_titleController.text.isEmpty) {
+      setState(() => _error = 'Please enter a title');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final now = DateTime.now();
+    final startTime = now.add(const Duration(hours: 1));
+    final endTime = now.add(const Duration(hours: 3));
+
+    final response = await eventService.createEvent({
+      'name': _titleController.text,
+      'description': _descriptionController.text,
+      'status': 'PUBLISHED',
+      'visibility': 'PUBLIC',
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      'location': {
+        'latitude': 34.0522,
+        'longitude': -118.2437,
+        'address': 'Downtown Los Angeles, CA',
+      },
+    });
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+      if (response.error != null) {
+        setState(() => _error = response.error);
+      } else {
+        context.go(SuccessScreen.routePath);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +85,7 @@ class CreateEventScreen extends StatelessWidget {
               children: [
                 AppHeader(
                   title: 'Create Event',
-                  onBack: () => context.go('/explore'),
+                  onBack: () => context.go(ExploreScreen.routePath),
                   rightElement: Container(
                     width: 40,
                     height: 40,
@@ -72,6 +137,23 @@ class CreateEventScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (_error != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _error!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
                         // [NEW] Image Upload Section
                         Container(
                           width: double.infinity,
@@ -103,7 +185,7 @@ class CreateEventScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   LucideIcons.uploadCloud,
                                   size: 24,
                                   color: AppColors.surface,
@@ -119,7 +201,7 @@ class CreateEventScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
+                              const Text(
                                 'TAP OR DRAG IMAGE HERE',
                                 style: TextStyle(
                                   fontSize: 10,
@@ -217,10 +299,11 @@ class CreateEventScreen extends StatelessWidget {
                             children: [
                               _sectionLabel('Event Details'),
                               const SizedBox(height: 8),
-                              const AppInput(
+                              AppInput(
                                 placeholder:
                                     'Event Title (e.g. Midnight Pizza)',
                                 height: 56,
+                                controller: _titleController,
                               ),
                               const SizedBox(height: 16),
 
@@ -266,10 +349,11 @@ class CreateEventScreen extends StatelessWidget {
                                       children: [
                                         _sectionLabel('Starts'),
                                         const SizedBox(height: 8),
-                                        const AppInput(
+                                        AppInput(
                                           placeholder: '08:00 AM',
                                           height: 56,
-                                          rightElement: Icon(
+                                          controller: _startTimeController,
+                                          rightElement: const Icon(
                                             LucideIcons.clock,
                                             size: 16,
                                             color: AppColors.mutedForeground,
@@ -286,10 +370,11 @@ class CreateEventScreen extends StatelessWidget {
                                       children: [
                                         _sectionLabel('Ends'),
                                         const SizedBox(height: 8),
-                                        const AppInput(
+                                        AppInput(
                                           placeholder: '10:00 AM',
                                           height: 56,
-                                          rightElement: Icon(
+                                          controller: _endTimeController,
+                                          rightElement: const Icon(
                                             LucideIcons.clock,
                                             size: 16,
                                             color: AppColors.mutedForeground,
@@ -311,9 +396,10 @@ class CreateEventScreen extends StatelessWidget {
                                   color: AppColors.muted,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: const TextField(
+                                child: TextField(
+                                  controller: _descriptionController,
                                   maxLines: 5,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText:
                                         'Dietary info, access codes, etc...',
                                     hintStyle: TextStyle(
@@ -324,7 +410,7 @@ class CreateEventScreen extends StatelessWidget {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.all(16),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.primary,
@@ -350,43 +436,52 @@ class CreateEventScreen extends StatelessWidget {
             child: AppButton(
               size: AppButtonSize.xl,
               fullWidth: true,
-              onPressed: () => context.go('/success'),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: const [
-                      Text(
-                        'Launch Event',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.surface,
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Icon(
-                        LucideIcons.rocket,
-                        size: 20,
+              onPressed: _isLoading ? null : _handleCreate,
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
                         color: AppColors.surface,
+                        strokeWidth: 2,
                       ),
-                    ],
-                  ),
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: const [
+                            Text(
+                              'Launch Event',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.surface,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Icon(
+                              LucideIcons.rocket,
+                              size: 20,
+                              color: AppColors.surface,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.surface.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            LucideIcons.arrowRight,
+                            size: 16,
+                            color: AppColors.surface,
+                          ),
+                        ),
+                      ],
                     ),
-                    child: const Icon(
-                      LucideIcons.arrowRight,
-                      size: 16,
-                      color: AppColors.surface,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],

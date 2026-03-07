@@ -1,29 +1,69 @@
-'use client';
-
-import React from 'react';
-import { motion } from 'motion/react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Header } from '@/components/ui/Header';
-import { Card } from '@/components/ui/Card';
-import { BottomNav } from '@/components/ui/BottomNav';
-import { 
-  MoreVertical, 
-  CloudUpload, 
-  MapPin, 
-  Rocket, 
+import React, { useState } from "react";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Header } from "@/components/ui/Header";
+import { Card } from "@/components/ui/Card";
+import { BottomNav } from "@/components/ui/BottomNav";
+import {
+  MoreVertical,
+  CloudUpload,
+  MapPin,
+  Rocket,
   ArrowRight,
   ChevronDown,
-  Clock
-} from 'lucide-react';
-import Link from 'next/link';
+  Clock,
+} from "lucide-react";
+import Link from "next/link";
+import { eventService } from "@/services/eventService";
+import { useRouter } from "next/navigation";
 
 export default function CreateEventPage() {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [category, setCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      // Basic validation and formatting
+      const now = new Date();
+      const dateStr = now.toISOString().split("T")[0];
+
+      const payload = {
+        name,
+        description,
+        status: "active",
+        visibility: "public",
+        startTime: `${dateStr}T${startTime || "12:00"}:00Z`,
+        endTime: `${dateStr}T${endTime || "14:00"}:00Z`,
+        location: {
+          latitude: 40.7128, // Default to NYC for now
+          longitude: -74.006,
+          address: "Manhattan, NY",
+        },
+        tags: category ? [{ name: category.split(" ")[1] }] : [],
+      };
+
+      await eventService.createEvent(payload);
+      router.push("/success");
+    } catch (error) {
+      console.error("Failed to create event:", error);
+      alert("Failed to create event. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen w-full max-w-md mx-auto bg-surface flex flex-col">
-      <Header 
-        title="Create Event" 
-        backHref="/explore" 
+      <Header
+        title="Create Event"
+        backHref="/explore"
         rightElement={
           <button className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-muted transition-colors">
             <MoreVertical className="w-5 h-5" />
@@ -32,9 +72,9 @@ export default function CreateEventPage() {
       />
       <div className="px-6 pb-4">
         <div className="h-1 w-full bg-muted mt-4 rounded-full overflow-hidden">
-          <motion.div 
+          <motion.div
             initial={{ width: 0 }}
-            animate={{ width: '66%' }}
+            animate={{ width: "66%" }}
             className="h-full bg-primary rounded-full"
           />
         </div>
@@ -49,17 +89,34 @@ export default function CreateEventPage() {
             </div>
             <div className="text-center">
               <p className="text-sm font-bold">Upload Event Cover</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Tap or drag image here</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                Tap or drag image here
+              </p>
             </div>
           </div>
-          <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" />
+          <input
+            type="file"
+            className="absolute inset-0 opacity-0 cursor-pointer"
+          />
         </div>
 
         {/* Location Section */}
         <section className="space-y-3">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Location</label>
-          <Card padding="none" className="h-40 bg-muted border border-border relative overflow-hidden grayscale rounded-3xl">
-            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(var(--color-primary) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+            Location
+          </label>
+          <Card
+            padding="none"
+            className="h-40 bg-muted border border-border relative overflow-hidden grayscale rounded-3xl"
+          >
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage:
+                  "radial-gradient(var(--color-primary) 1px, transparent 1px)",
+                backgroundSize: "20px 20px",
+              }}
+            />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className="relative mb-3">
                 <div className="absolute inset-0 bg-primary rounded-full animate-pulse opacity-20" />
@@ -75,50 +132,79 @@ export default function CreateEventPage() {
         </section>
 
         {/* Form Details */}
-        <Card padding="lg" className="bg-surface border border-border rounded-[2.5rem] space-y-6 shadow-sm">
+        <Card
+          padding="lg"
+          className="bg-surface border border-border rounded-[2.5rem] space-y-6 shadow-sm"
+        >
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Event Details</label>
-            <Input 
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              Event Details
+            </label>
+            <Input
               placeholder="Event Title (e.g. Midnight Pizza)"
               className="h-14 rounded-2xl"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div className="relative">
-            <select className="w-full h-14 bg-muted border-none rounded-2xl px-4 text-sm font-bold appearance-none focus:ring-2 focus:ring-primary/10 transition-all text-primary">
-              <option disabled selected>Select Category</option>
-              <option>🍕 Full Meals</option>
-              <option>🥨 Snacks</option>
-              <option>🥤 Drinks</option>
-              <option>🍰 Dessert</option>
+            <select
+              className="w-full h-14 bg-muted border-none rounded-2xl px-4 text-sm font-bold appearance-none focus:ring-2 focus:ring-primary/10 transition-all text-primary"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="" disabled>
+                Select Category
+              </option>
+              <option value="pizza">🍕 Full Meals</option>
+              <option value="snacks">🥨 Snacks</option>
+              <option value="drinks">🥤 Drinks</option>
+              <option value="dessert">🍰 Dessert</option>
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Starts</label>
-              <Input 
-                type="time" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                Starts
+              </label>
+              <Input
+                type="time"
                 className="h-14 rounded-2xl"
-                rightElement={<Clock className="w-4 h-4 text-muted-foreground" />}
+                rightElement={
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                }
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Ends</label>
-              <Input 
-                type="time" 
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                Ends
+              </label>
+              <Input
+                type="time"
                 className="h-14 rounded-2xl"
-                rightElement={<Clock className="w-4 h-4 text-muted-foreground" />}
+                rightElement={
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                }
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Notes</label>
-            <textarea 
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              Notes
+            </label>
+            <textarea
               placeholder="Dietary info, access codes, etc..."
               className="w-full h-32 bg-muted border-none rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 transition-all resize-none text-primary"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
         </Card>
@@ -126,17 +212,20 @@ export default function CreateEventPage() {
 
       {/* Footer Action */}
       <div className="p-6 bg-surface/80 backdrop-blur-xl border-t border-border">
-        <Link href="/success">
-          <Button size="xl" className="w-full justify-between px-6">
-            <span className="flex items-center gap-3">
-              <Rocket className="w-5 h-5" />
-              Launch Event
-            </span>
-            <div className="w-8 h-8 bg-surface/20 rounded-full flex items-center justify-center">
-              <ArrowRight className="w-4 h-4" />
-            </div>
-          </Button>
-        </Link>
+        <Button
+          size="xl"
+          className="w-full justify-between px-6"
+          onClick={handleSubmit}
+          disabled={isLoading || !name}
+        >
+          <span className="flex items-center gap-3">
+            <Rocket className="w-5 h-5" />
+            {isLoading ? "Launching..." : "Launch Event"}
+          </span>
+          <div className="w-8 h-8 bg-surface/20 rounded-full flex items-center justify-center">
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </Button>
       </div>
       <BottomNav />
     </main>

@@ -3,6 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 
+import '../screens/explore.dart';
+import '../screens/search.dart';
+import '../screens/create_event.dart';
+import '../screens/updates.dart';
+import '../screens/profile.dart';
+
 class AppBottomNav extends StatelessWidget {
   const AppBottomNav({super.key});
 
@@ -11,11 +17,16 @@ class AppBottomNav extends StatelessWidget {
     final currentPath = GoRouterState.of(context).uri.path;
 
     final items = [
-      _NavItem('/explore', LucideIcons.compass, 'Explore'),
-      _NavItem('/search', LucideIcons.heart, 'Saved'),
-      _NavItem('/create', LucideIcons.plus, 'Create', isAction: true),
-      _NavItem('/updates', LucideIcons.bell, 'Updates'),
-      _NavItem('/profile', LucideIcons.user, 'Profile'),
+      _NavItem(ExploreScreen.routePath, LucideIcons.compass, 'Explore'),
+      _NavItem(SearchScreen.routePath, LucideIcons.heart, 'Saved'),
+      _NavItem(
+        CreateEventScreen.routePath,
+        LucideIcons.plus,
+        'Create',
+        isAction: true,
+      ),
+      _NavItem(UpdatesScreen.routePath, LucideIcons.bell, 'Updates'),
+      _NavItem(ProfileScreen.routePath, LucideIcons.user, 'Profile'),
     ];
 
     return Positioned(

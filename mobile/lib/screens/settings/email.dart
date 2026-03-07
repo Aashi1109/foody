@@ -6,7 +6,10 @@ import '../../widgets/header.dart';
 import '../../widgets/button.dart';
 import '../../widgets/input.dart';
 
+import '../settings.dart';
+
 class EmailSettingsScreen extends StatelessWidget {
+  static const String routePath = '/settings/email';
   const EmailSettingsScreen({super.key});
 
   @override
@@ -15,7 +18,10 @@ class EmailSettingsScreen extends StatelessWidget {
       backgroundColor: AppColors.surface,
       body: Column(
         children: [
-          AppHeader(title: 'Edit Email', onBack: () => context.go('/settings')),
+          AppHeader(
+            title: 'Edit Email',
+            onBack: () => context.go(SettingsScreen.routePath),
+          ),
           Expanded(
             child: Center(
               child: SingleChildScrollView(

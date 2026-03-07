@@ -5,8 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../widgets/card.dart';
+import 'explore.dart';
 
 class SuccessScreen extends StatelessWidget {
+  static const String routePath = '/success';
   const SuccessScreen({super.key});
 
   @override
@@ -34,15 +36,15 @@ class SuccessScreen extends StatelessWidget {
                             color: AppColors.primary.withValues(alpha: 0.2),
                             blurRadius: 24,
                             offset: const Offset(0, 8),
-                          ), 
+                          ),
                         ],
-                      ), 
+                      ),
                       child: const Icon(
                         LucideIcons.check,
                         size: 48,
                         color: AppColors.surface,
-                      ), 
-                    ), 
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     const Text(
                       'Event Live!',
@@ -51,8 +53,8 @@ class SuccessScreen extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
                         color: AppColors.primary,
-                      ), 
-                    ), 
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     const Text(
                       'Your contribution is now visible on the map.',
@@ -60,8 +62,8 @@ class SuccessScreen extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: AppColors.mutedForeground,
-                      ), 
-                    ), 
+                      ),
+                    ),
                     const SizedBox(height: 40),
 
                     // Event card
@@ -78,16 +80,16 @@ class SuccessScreen extends StatelessWidget {
                                   colorFilter: const ColorFilter.mode(
                                     Colors.grey,
                                     BlendMode.saturation,
-                                  ), 
+                                  ),
                                   child: CachedNetworkImage(
                                     imageUrl:
                                         'https://picsum.photos/seed/burrito/200/200',
                                     width: 80,
                                     height: 80,
                                     fit: BoxFit.cover,
-                                  ), 
-                                ), 
-                              ), 
+                                  ),
+                                ),
+                              ),
                               const SizedBox(width: 16),
                               Expanded(
                                 child: Column(
@@ -99,13 +101,13 @@ class SuccessScreen extends StatelessWidget {
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 8,
                                             vertical: 2,
-                                          ), 
+                                          ),
                                           decoration: BoxDecoration(
                                             color: AppColors.primary,
                                             borderRadius: BorderRadius.circular(
                                               50,
-                                            ), 
-                                          ), 
+                                            ),
+                                          ),
                                           child: const Text(
                                             'MEALS',
                                             style: TextStyle(
@@ -113,9 +115,9 @@ class SuccessScreen extends StatelessWidget {
                                               fontWeight: FontWeight.w900,
                                               letterSpacing: 2,
                                               color: AppColors.surface,
-                                            ), 
-                                          ), 
-                                        ), 
+                                            ),
+                                          ),
+                                        ),
                                         const SizedBox(width: 8),
                                         const Text(
                                           'Just now',
@@ -123,10 +125,10 @@ class SuccessScreen extends StatelessWidget {
                                             fontSize: 10,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.mutedForeground,
-                                          ), 
-                                        ), 
+                                          ),
+                                        ),
                                       ],
-                                    ), 
+                                    ),
                                     const SizedBox(height: 4),
                                     const Text(
                                       'Free Breakfast Burritos',
@@ -135,8 +137,8 @@ class SuccessScreen extends StatelessWidget {
                                         fontWeight: FontWeight.w700,
                                         height: 1.2,
                                         color: AppColors.primary,
-                                      ), 
-                                    ), 
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: const [
@@ -144,7 +146,7 @@ class SuccessScreen extends StatelessWidget {
                                           LucideIcons.mapPin,
                                           size: 14,
                                           color: AppColors.mutedForeground,
-                                        ), 
+                                        ),
                                         SizedBox(width: 4),
                                         Text(
                                           'Downtown Community Center',
@@ -152,23 +154,23 @@ class SuccessScreen extends StatelessWidget {
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.mutedForeground,
-                                          ), 
-                                        ), 
+                                          ),
+                                        ),
                                       ],
-                                    ), 
+                                    ),
                                   ],
-                                ), 
-                              ), 
+                                ),
+                              ),
                             ],
-                          ), 
+                          ),
                           const SizedBox(height: 20),
                           Container(
                             padding: const EdgeInsets.only(top: 20),
                             decoration: const BoxDecoration(
                               border: Border(
                                 top: BorderSide(color: AppColors.border),
-                              ), 
-                            ), 
+                              ),
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -178,7 +180,7 @@ class SuccessScreen extends StatelessWidget {
                                       LucideIcons.clock,
                                       size: 16,
                                       color: AppColors.mutedForeground,
-                                    ), 
+                                    ),
                                     SizedBox(width: 8),
                                     Text(
                                       '08:00 AM - 10:30 AM',
@@ -186,10 +188,10 @@ class SuccessScreen extends StatelessWidget {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: AppColors.primary,
-                                      ), 
-                                    ), 
+                                      ),
+                                    ),
                                   ],
-                                ), 
+                                ),
                                 Row(
                                   children: [
                                     Container(
@@ -201,8 +203,8 @@ class SuccessScreen extends StatelessWidget {
                                         border: Border.all(
                                           color: AppColors.surface,
                                           width: 2,
-                                        ), 
-                                      ), 
+                                        ),
+                                      ),
                                       child: const Center(
                                         child: Text(
                                           '+1',
@@ -210,28 +212,28 @@ class SuccessScreen extends StatelessWidget {
                                             fontSize: 8,
                                             fontWeight: FontWeight.w900,
                                             color: AppColors.mutedForeground,
-                                          ), 
-                                        ), 
-                                      ), 
-                                    ), 
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     const SizedBox(width: 6),
                                     Icon(
                                       LucideIcons.users,
                                       size: 14,
                                       color: AppColors.mutedForeground
                                           .withValues(alpha: 0.4),
-                                    ), 
+                                    ),
                                   ],
-                                ), 
+                                ),
                               ],
-                            ), 
-                          ), 
+                            ),
+                          ),
                         ],
-                      ), 
-                    ), 
+                      ),
+                    ),
                   ],
-                ), 
-              ), 
+                ),
+              ),
 
               // Bottom buttons
               Column(
@@ -241,21 +243,21 @@ class SuccessScreen extends StatelessWidget {
                     fullWidth: true,
                     icon: const Icon(LucideIcons.map),
                     label: 'View on Map',
-                    onPressed: () => context.go('/explore'),
-                  ), 
+                    onPressed: () => context.go(ExploreScreen.routePath),
+                  ),
                   const SizedBox(height: 12),
                   AppButton(
                     variant: AppButtonVariant.outline,
                     size: AppButtonSize.xl,
                     fullWidth: true,
                     label: 'Done',
-                    onPressed: () => context.go('/explore'),
-                  ), 
+                    onPressed: () => context.go(ExploreScreen.routePath),
+                  ),
                 ],
-              ), 
+              ),
             ],
-          ), 
-        ), 
+          ),
+        ),
       ),
     );
   }

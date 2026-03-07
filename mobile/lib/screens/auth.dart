@@ -8,7 +8,14 @@ import '../widgets/input.dart';
 import '../widgets/card.dart';
 import '../widgets/header.dart';
 
+import '../services/auth.dart';
+
+import 'onboarding.dart';
+import 'login.dart';
+import 'explore.dart';
+
 class AuthScreen extends StatefulWidget {
+  static const String routePath = '/auth';
   const AuthScreen({super.key});
 
   @override
@@ -17,6 +24,43 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool nearMe = true;
+  final TextEditingController _emailController = TextEditingController();
+  String? _emailError;
+  bool _isEmailValid = false;
+
+  void _validateEmail(String value) {
+    if (value.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _emailError = null;
+          _isEmailValid = false;
+        });
+      }
+      return;
+    }
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(value)) {
+      if (mounted) {
+        setState(() {
+          _emailError = 'Invalid email address';
+          _isEmailValid = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _emailError = null;
+          _isEmailValid = true;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           children: [
             AppHeader(
-              onBack: () => context.go('/onboarding'),
+              onBack: () => context.go(OnboardingScreen.routePath),
               title: '',
               showBorder: false,
               backgroundColor: AppColors.transparent,
@@ -67,10 +111,13 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       child: Column(
                         children: [
-                          const AppInput(
+                          AppInput(
                             label: 'Email',
                             placeholder: 'chef@foodie.com',
                             keyboardType: TextInputType.emailAddress,
+                            controller: _emailController,
+                            error: _emailError,
+                            onChanged: _validateEmail,
                           ),
                           const SizedBox(height: 16),
                           AppButton(
@@ -78,7 +125,13 @@ class _AuthScreenState extends State<AuthScreen> {
                             fullWidth: true,
                             label: 'Continue',
                             iconRight: const Icon(LucideIcons.arrowRight),
-                            onPressed: () => context.go('/login'),
+                            onPressed: _isEmailValid
+                                ? () {
+                                    context.go(
+                                      '${LoginScreen.routePath}?email=${Uri.encodeComponent(_emailController.text)}',
+                                    );
+                                  }
+                                : null,
                           ),
 
                           // Divider
@@ -117,6 +170,27 @@ class _AuthScreenState extends State<AuthScreen> {
                                 child: AppButton(
                                   variant: AppButtonVariant.outline,
                                   size: AppButtonSize.lg,
+                                  onPressed: () async {
+                                    final response = await authService
+                                        .signInWithGoogle();
+                                    if (context.mounted) {
+                                      if (response.data != null) {
+                                        context.go(ExploreScreen.routePath);
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              response.error ??
+                                                  'Google Sign-In failed',
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
                                   child: ClipOval(
                                     child: CachedNetworkImage(
                                       imageUrl:

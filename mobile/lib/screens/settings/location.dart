@@ -7,7 +7,10 @@ import '../../widgets/header.dart';
 import '../../widgets/button.dart';
 import '../../widgets/input.dart';
 
+import '../settings.dart';
+
 class LocationSettingsScreen extends StatelessWidget {
+  static const String routePath = '/settings/location';
   const LocationSettingsScreen({super.key});
 
   @override
@@ -18,7 +21,7 @@ class LocationSettingsScreen extends StatelessWidget {
         children: [
           AppHeader(
             title: 'Default Location',
-            onBack: () => context.go('/settings'),
+            onBack: () => context.go(SettingsScreen.routePath),
           ),
           Expanded(
             child: Padding(

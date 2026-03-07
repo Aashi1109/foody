@@ -6,7 +6,11 @@ import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../widgets/header.dart';
 
+import 'splash.dart';
+import 'explore.dart';
+
 class PreferencesScreen extends StatefulWidget {
+  static const String routePath = '/preferences';
   const PreferencesScreen({super.key});
 
   @override
@@ -43,9 +47,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         children: [
           AppHeader(
             title: 'Preferences',
-            onBack: () => context.go('/'),
+            onBack: () => context.go(SplashScreen.routePath),
             rightElement: GestureDetector(
-              onTap: () => context.go('/explore'),
+              onTap: () => context.go(ExploreScreen.routePath),
               child: const Text(
                 'Skip',
                 style: TextStyle(
@@ -329,7 +333,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               fullWidth: true,
               label: 'Complete Setup',
               iconRight: const Icon(LucideIcons.arrowRight),
-              onPressed: () => context.go('/explore'),
+              onPressed: () => context.go(ExploreScreen.routePath),
             ),
           ),
         ],

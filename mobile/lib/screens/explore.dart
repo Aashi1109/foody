@@ -7,8 +7,12 @@ import '../widgets/button.dart';
 import '../widgets/input.dart';
 import '../widgets/card.dart';
 import '../widgets/bottom_nav.dart';
+import '../services/event.dart';
+import '../models/event.dart';
+import 'event_detail.dart';
 
 class ExploreScreen extends StatefulWidget {
+  static const String routePath = '/explore';
   const ExploreScreen({super.key});
 
   @override
@@ -16,14 +20,38 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  bool _showDetails = true;
+  bool _showDetails = false;
   bool _isFilterOpen = false;
+  List<Event> _events = [];
+  Event? _selectedEvent;
+  bool _isLoading = true;
 
   final _filters = [
     _Filter('ongoing', 'Ongoing Now', LucideIcons.timer),
     _Filter('vegan', 'Vegan', null),
     _Filter('street', 'Street Food', null),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
+
+  Future<void> _loadEvents() async {
+    setState(() => _isLoading = true);
+    final response = await eventService.getEvents();
+    if (mounted) {
+      setState(() {
+        _events = response.data?.items ?? [];
+        if (_events.isNotEmpty) {
+          _selectedEvent = _events.first;
+          _showDetails = true;
+        }
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +73,30 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
           ),
 
-          // Map markers
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.33,
-            left: MediaQuery.of(context).size.width * 0.25,
-            child: _buildMarker(LucideIcons.pizza, 48),
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.33,
-            right: MediaQuery.of(context).size.width * 0.25,
-            child: _buildMarker(null, 40),
-          ),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
+          else ...[
+            // Map markers (Simulated positioning for first 3 events)
+            for (int i = 0; i < _events.length && i < 3; i++)
+              Positioned(
+                top: MediaQuery.of(context).size.height * (0.2 + (i * 0.15)),
+                left: MediaQuery.of(context).size.width * (0.2 + (i * 0.2)),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedEvent = _events[i];
+                      _showDetails = true;
+                    });
+                  },
+                  child: _buildMarker(
+                    _getCategoryIcon(_events[i].tags?.firstOrNull?.name),
+                    _selectedEvent?.id == _events[i].id ? 56 : 48,
+                  ),
+                ),
+              ),
+          ],
 
           // Search bar
           Positioned(
@@ -207,7 +248,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
 
           // Event card (bottom sheet)
-          if (_showDetails)
+          if (_showDetails && _selectedEvent != null)
             Positioned(
               bottom: 112,
               left: 20,
@@ -222,18 +263,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         // Thumbnail
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
-                              Colors.grey,
-                              BlendMode.saturation,
-                            ),
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  'https://picsum.photos/seed/pizza/200/200',
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                            ),
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                _selectedEvent!.media?.firstOrNull?.url ??
+                                'https://picsum.photos/seed/${_selectedEvent!.id}/200/200',
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -241,9 +277,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Community Pizza Night',
-                                style: TextStyle(
+                              Text(
+                                _selectedEvent!.name,
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
                                   height: 1.2,
@@ -256,15 +292,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   Container(
                                     width: 8,
                                     height: 8,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.primary,
+                                    decoration: BoxDecoration(
+                                      color: _selectedEvent!.status == 'active'
+                                          ? AppColors.primary
+                                          : Colors.grey,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
-                                    'Open · Free Entry',
-                                    style: TextStyle(
+                                  Text(
+                                    '${_selectedEvent!.status.toUpperCase()} · Free Entry',
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.mutedForeground,
@@ -274,16 +312,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                children: const [
-                                  Icon(
+                                children: [
+                                  const Icon(
                                     LucideIcons.timer,
                                     size: 16,
                                     color: AppColors.primary,
                                   ),
-                                  SizedBox(width: 6),
+                                  const SizedBox(width: 6),
                                   Text(
-                                    '45 mins remaining',
-                                    style: TextStyle(
+                                    _getRelativeTime(_selectedEvent!.endTime),
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.primary,
@@ -315,13 +353,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     const SizedBox(height: 20),
 
                     // Tags
-                    Row(
-                      children: [
-                        _tag('VEGETARIAN OPTION'),
-                        const SizedBox(width: 8),
-                        _tag('OUTDOOR EVENT'),
-                      ],
-                    ),
+                    if (_selectedEvent!.tags != null)
+                      SizedBox(
+                        height: 28,
+                        child: ListView.separated(
+                          padding: EdgeInsets.zero,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _selectedEvent!.tags!.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          itemBuilder: (_, i) =>
+                              _tag(_selectedEvent!.tags![i].name.toUpperCase()),
+                        ),
+                      ),
                     const SizedBox(height: 20),
 
                     // Action buttons
@@ -332,7 +375,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             size: AppButtonSize.lg,
                             icon: const Icon(LucideIcons.navigation),
                             label: 'Get Directions',
-                            onPressed: () => context.go('/event/1'),
+                            onPressed: () => context.go(
+                              EventDetailScreen.routePath.replaceAll(
+                                ':id',
+                                _selectedEvent!.id.toString(),
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -360,6 +408,28 @@ class _ExploreScreenState extends State<ExploreScreen> {
         ],
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String? category) {
+    switch (category?.toLowerCase()) {
+      case 'pizza':
+        return LucideIcons.pizza;
+      case 'veggie':
+        return LucideIcons.leaf;
+      case 'snack':
+        return LucideIcons.cookie;
+      default:
+        return LucideIcons.utensils;
+    }
+  }
+
+  String _getRelativeTime(DateTime endTime) {
+    final diff = endTime.difference(DateTime.now());
+    if (diff.isNegative) return 'Ended';
+    if (diff.inHours > 0) {
+      return '${diff.inHours}h ${diff.inMinutes % 60}m remaining';
+    }
+    return '${diff.inMinutes} mins remaining';
   }
 
   Widget _buildMarker(IconData? icon, double size) {

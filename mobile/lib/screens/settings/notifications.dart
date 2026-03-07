@@ -4,8 +4,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/theme.dart';
 import '../../widgets/header.dart';
 import '../../widgets/button.dart';
+import '../settings.dart';
 
 class NotificationsSettingsScreen extends StatefulWidget {
+  static const String routePath = '/settings/notifications';
   const NotificationsSettingsScreen({super.key});
 
   @override
@@ -29,7 +31,7 @@ class _NotificationsSettingsScreenState
         children: [
           AppHeader(
             title: 'Notifications',
-            onBack: () => context.go('/settings'),
+            onBack: () => context.go(SettingsScreen.routePath),
           ),
           Expanded(
             child: SingleChildScrollView(

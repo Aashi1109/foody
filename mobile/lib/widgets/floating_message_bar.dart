@@ -48,9 +48,7 @@ class _FloatingMessageBarState extends State<FloatingMessageBar> {
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: 'file_name.jpg',
           url:
-              'https://picsum.photos/seed/attachment' +
-              DateTime.now().millisecondsSinceEpoch.toString() +
-              '/100/100',
+              'https://picsum.photos/seed/attachment${DateTime.now().millisecondsSinceEpoch}/100/100',
         ),
       );
     });

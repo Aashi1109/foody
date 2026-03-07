@@ -4,8 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 import '../widgets/floating_message_bar.dart';
+import 'explore.dart';
+import 'thread.dart';
+import '../services/socket.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
+  static const String routePath = '/chat/:id';
   final String id;
   const ChatScreen({super.key, required this.id});
 
@@ -14,14 +19,70 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isInputVisible = true;
+  final List<Map<String, dynamic>> _messages = [
+    {
+      'name': 'John Doe',
+      'initials': 'JD',
+      'badge': 'Participating',
+      'text': "Has anyone arrived at the park yet? I'm bringing extra napkins!",
+      'time': '10:24 AM',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/seed/grill/600/400',
+      'caption': 'Setting up the grill now! 🔥',
+      'time': '10:30 AM',
+    },
+    {
+      'name': 'Sarah M.',
+      'imageUrl': 'https://picsum.photos/seed/sarah/100/100',
+      'text': "Wow that looks amazing! I'm about 5 mins away.",
+      'time': '10:32 AM',
+      'hasThread': true,
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
+    _connectSocket();
+  }
+
+  Future<void> _connectSocket() async {
+    await socketService.connect(widget.id);
+    socketService.messages.listen((event) {
+      if (mounted && event['event'] == 'message:created') {
+        final message = event['data'];
+        setState(() {
+          _messages.add({
+            'name': message['user']?['name'] ?? 'Unknown',
+            'text': message['content']?['text'] ?? '',
+            'time': DateFormat('hh:mm a').format(DateTime.now()),
+            'initials':
+                (message['user']?['name'] as String?)
+                    ?.split(' ')
+                    .map((e) => e[0])
+                    .join('') ??
+                '?',
+          });
+        });
+        _scrollToBottom();
+      }
+    });
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   void _scrollListener() {
@@ -44,9 +105,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _messageController.dispose();
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+    socketService.disconnect();
     super.dispose();
   }
 
@@ -60,35 +121,26 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               _buildHeader(context),
               Expanded(
-                child: ListView(
+                child: ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
-                  children: [
-                    _buildTimestamp('Today, 10:23 AM'),
-                    const SizedBox(height: 24),
-                    _buildMessage(
-                      name: 'John Doe',
-                      initials: 'JD',
-                      badge: 'Participating',
-                      text:
-                          "Has anyone arrived at the park yet? I'm bringing extra napkins!",
-                      time: '10:24 AM',
-                    ),
-                    const SizedBox(height: 32),
-                    _buildImageMessage(
-                      imageUrl: 'https://picsum.photos/seed/grill/600/400',
-                      caption: 'Setting up the grill now! 🔥',
-                      time: '10:30 AM',
-                    ),
-                    const SizedBox(height: 32),
-                    _buildMessage(
-                      name: 'Sarah M.',
-                      imageUrl: 'https://picsum.photos/seed/sarah/100/100',
-                      text: "Wow that looks amazing! I'm about 5 mins away.",
-                      time: '10:32 AM',
-                      hasThread: true,
-                    ),
-                  ],
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = _messages[index];
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          _buildTimestamp('Today, 10:23 AM'),
+                          const SizedBox(height: 24),
+                          _renderMessage(msg),
+                        ],
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 32),
+                      child: _renderMessage(msg),
+                    );
+                  },
                 ),
               ),
             ],
@@ -99,8 +151,42 @@ class _ChatScreenState extends State<ChatScreen> {
             right: 0,
             child: FloatingMessageBar(
               isVisible: _isInputVisible,
-              onSend: (msg, files) {
-                print('Sending message: $msg with ${files.length} files');
+              onSend: (msg, files) async {
+                if (msg.trim().isNotEmpty) {
+                  try {
+                    // Send message and await acknowledgment
+                    final response = await socketService.sendMessage(
+                      'message:created',
+                      {
+                        'content': {'text': msg},
+                        'threadId': widget.id, // Assuming widget.id is threadId
+                      },
+                    );
+
+                    print('Server Ack: $response');
+
+                    // Note: In typical socket.io, the server broadcasts back.
+                    // We only add to local list if the server ack is successful OR if we want optimistic UI.
+                    // Given we expect a broadcast back, we might see it twice if we add here.
+                    // Adding "You" optimistically for now.
+                    setState(() {
+                      _messages.add({
+                        'name': 'You',
+                        'initials': 'YO',
+                        'text': msg,
+                        'time': DateFormat('hh:mm a').format(DateTime.now()),
+                      });
+                    });
+                    _scrollToBottom();
+                  } catch (e) {
+                    print('Failed to send message: $e');
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to send message: $e')),
+                      );
+                    }
+                  }
+                }
               },
             ),
           ),
@@ -124,8 +210,9 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () =>
-                context.canPop() ? context.pop() : context.go('/explore'),
+            onTap: () => context.canPop()
+                ? context.pop()
+                : context.go(ExploreScreen.routePath),
             child: Container(
               width: 40,
               height: 40,
@@ -234,6 +321,25 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _renderMessage(Map<String, dynamic> msg) {
+    if (msg.containsKey('imageUrl')) {
+      return _buildImageMessage(
+        imageUrl: msg['imageUrl'],
+        caption: msg['caption'],
+        time: msg['time'],
+      );
+    }
+    return _buildMessage(
+      name: msg['name'],
+      initials: msg['initials'],
+      imageUrl: msg['imageUrl'],
+      badge: msg['badge'],
+      text: msg['text'],
+      time: msg['time'],
+      hasThread: msg['hasThread'] ?? false,
     );
   }
 
@@ -371,7 +477,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (hasThread) ...[
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => context.push('/thread/1'),
+                      onTap: () => context.push(
+                        ThreadScreen.routePath.replaceAll(':id', '1'),
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -398,7 +506,9 @@ class _ChatScreenState extends State<ChatScreen> {
               if (hasThread) ...[
                 const SizedBox(height: 12),
                 GestureDetector(
-                  onTap: () => context.push('/thread/1'),
+                  onTap: () => context.push(
+                    ThreadScreen.routePath.replaceAll(':id', '1'),
+                  ),
                   child: _buildThreadCard(),
                 ),
               ],
@@ -603,7 +713,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     LucideIcons.plus,
                     size: 16,
                     color: Colors.white,
-                    textDirection: TextDirection.ltr,
                   ),
                 ),
               ),

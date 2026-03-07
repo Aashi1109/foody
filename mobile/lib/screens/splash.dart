@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/theme.dart';
+import '../services/secure_storage.dart';
+import '../services/local_storage.dart';
+
+import 'explore.dart';
+import 'onboarding.dart';
+import 'auth.dart';
 
 class SplashScreen extends StatefulWidget {
+  static const String routePath = '/';
   const SplashScreen({super.key});
 
   @override
@@ -37,9 +44,35 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) context.go('/onboarding');
-    });
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    // Ensuring animation shows for at least 2 seconds
+    await Future.delayed(const Duration(seconds: 2));
+
+    final authStorage = SecureStorage(namespace: 'auth');
+    final userStorage = LocalStorage(namespace: 'user');
+
+    final token = await authStorage.read('token');
+    final onboarded = await userStorage.get<bool>('onboarded') ?? false;
+
+    if (!mounted) return;
+
+    if (token != null) {
+      if (onboarded) {
+        context.go(ExploreScreen.routePath);
+      } else {
+        context.go(OnboardingScreen.routePath);
+      }
+    } else {
+      // No active session
+      if (onboarded) {
+        context.go(AuthScreen.routePath);
+      } else {
+        context.go(OnboardingScreen.routePath);
+      }
+    }
   }
 
   @override

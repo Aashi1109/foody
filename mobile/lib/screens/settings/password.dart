@@ -6,7 +6,10 @@ import '../../widgets/header.dart';
 import '../../widgets/button.dart';
 import '../../widgets/input.dart';
 
+import '../settings.dart';
+
 class PasswordSettingsScreen extends StatefulWidget {
+  static const String routePath = '/settings/password';
   const PasswordSettingsScreen({super.key});
 
   @override
@@ -31,7 +34,7 @@ class _PasswordSettingsScreenState extends State<PasswordSettingsScreen> {
         children: [
           AppHeader(
             title: 'Change Password',
-            onBack: () => context.go('/settings'),
+            onBack: () => context.go(SettingsScreen.routePath),
           ),
           Expanded(
             child: SingleChildScrollView(

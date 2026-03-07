@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
+import '../services/local_storage.dart';
 
 class OnboardingScreen extends StatefulWidget {
+  static const String routePath = '/onboarding';
   final VoidCallback onComplete;
 
   const OnboardingScreen({super.key, required this.onComplete});
@@ -14,6 +16,12 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   int _current = 0;
+  final storage = LocalStorage(namespace: 'user');
+
+  void _finish() async {
+    await storage.set('onboarded', true);
+    widget.onComplete();
+  }
 
   final _slides = const [
     _OnboardingSlide(
@@ -50,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: GestureDetector(
-                  onTap: widget.onComplete,
+                  onTap: _finish,
                   child: const Text(
                     'Skip',
                     style: TextStyle(
@@ -107,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (_current < 2) {
                       setState(() => _current++);
                     } else {
-                      widget.onComplete();
+                      _finish();
                     }
                   },
                 ),

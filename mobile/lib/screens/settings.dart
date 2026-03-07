@@ -4,8 +4,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 import '../widgets/header.dart';
 import '../widgets/button.dart';
+import 'profile.dart';
+import 'settings/profile_details.dart';
+import 'settings/email.dart';
+import 'settings/password.dart';
+import 'settings/cuisines.dart';
+import 'settings/location.dart';
+import 'settings/notifications.dart';
+import 'splash.dart';
 
 class SettingsScreen extends StatefulWidget {
+  static const String routePath = '/settings';
   const SettingsScreen({super.key});
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -20,7 +29,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: AppColors.surface,
       body: Column(
         children: [
-          AppHeader(title: 'Settings', onBack: () => context.go('/profile')),
+          AppHeader(
+            title: 'Settings',
+            onBack: () => context.go(ProfileScreen.routePath),
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
@@ -56,7 +68,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             bottom: 0,
                             right: 0,
                             child: GestureDetector(
-                              onTap: () => context.go('/settings/profile'),
+                              onTap: () =>
+                                  context.go(ProfileDetailsScreen.routePath),
                               child: Container(
                                 width: 24,
                                 height: 24,
@@ -124,14 +137,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       LucideIcons.mail,
                       'Email',
                       'alex.johnson@example.com',
-                      onTap: () => context.go('/settings/email'),
+                      onTap: () => context.go(EmailSettingsScreen.routePath),
                       showBorder: true,
                     ),
                     _settingItem(
                       LucideIcons.lock,
                       'Change Password',
                       'Update your security',
-                      onTap: () => context.go('/settings/password'),
+                      onTap: () => context.go(PasswordSettingsScreen.routePath),
                     ),
                   ]),
                   const SizedBox(height: 32),
@@ -144,21 +157,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       LucideIcons.utensils,
                       'Cuisine Interests',
                       'Vegan, Asian',
-                      onTap: () => context.go('/settings/cuisines'),
+                      onTap: () => context.go(CuisineInterestsScreen.routePath),
                       showBorder: true,
                     ),
                     _settingItem(
                       LucideIcons.mapPin,
                       'Default Location',
                       'San Francisco',
-                      onTap: () => context.go('/settings/location'),
+                      onTap: () => context.go(LocationSettingsScreen.routePath),
                       showBorder: true,
                     ),
                     _settingItem(
                       LucideIcons.bell,
                       'Notifications',
                       'Configure alerts',
-                      onTap: () => context.go('/settings/notifications'),
+                      onTap: () =>
+                          context.go(NotificationsSettingsScreen.routePath),
                     ),
                   ]),
                   const SizedBox(height: 32),
@@ -209,7 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     variant: AppButtonVariant.secondary,
                     size: AppButtonSize.xl,
                     fullWidth: true,
-                    onPressed: () => context.go('/'),
+                    onPressed: () => context.go(SplashScreen.routePath),
                     icon: const Icon(LucideIcons.logOut, size: 20),
                     label: 'Sign Out',
                   ),
