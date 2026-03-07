@@ -25,36 +25,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   bool nearMe = true;
   final TextEditingController _emailController = TextEditingController();
-  String? _emailError;
   bool _isEmailValid = false;
-
-  void _validateEmail(String value) {
-    if (value.isEmpty) {
-      if (mounted) {
-        setState(() {
-          _emailError = null;
-          _isEmailValid = false;
-        });
-      }
-      return;
-    }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      if (mounted) {
-        setState(() {
-          _emailError = 'Invalid email address';
-          _isEmailValid = false;
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _emailError = null;
-          _isEmailValid = true;
-        });
-      }
-    }
-  }
 
   @override
   void dispose() {
@@ -116,8 +87,22 @@ class _AuthScreenState extends State<AuthScreen> {
                             placeholder: 'chef@foodie.com',
                             keyboardType: TextInputType.emailAddress,
                             controller: _emailController,
-                            error: _emailError,
-                            onChanged: _validateEmail,
+                            validations: InputValidations(
+                              required: 'Email is required',
+                              pattern: ValidationRule(
+                                value: RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                ),
+                                message: 'Invalid email address',
+                              ),
+                            ),
+                            onValidationError: (error) {
+                              setState(() {
+                                _isEmailValid =
+                                    error == null &&
+                                    _emailController.text.isNotEmpty;
+                              });
+                            },
                           ),
                           const SizedBox(height: 16),
                           AppButton(

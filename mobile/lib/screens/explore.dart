@@ -9,6 +9,8 @@ import '../widgets/card.dart';
 import '../widgets/bottom_nav.dart';
 import '../services/event.dart';
 import '../models/event.dart';
+import '../services/socket.dart';
+import '../constants/socket_events.dart';
 import 'event_detail.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -44,13 +46,49 @@ class _ExploreScreenState extends State<ExploreScreen> {
     if (mounted) {
       setState(() {
         _events = response.data?.items ?? [];
-        if (_events.isNotEmpty) {
+        if (_events.isNotEmpty && _selectedEvent == null) {
           _selectedEvent = _events.first;
           _showDetails = true;
         }
         _isLoading = false;
       });
     }
+    _connectSocket();
+  }
+
+  void _connectSocket() {
+    socketService.connect('explore'); // Or appropriate ID
+    socketService.messages.listen((event) {
+      if (!mounted) return;
+
+      final eventName = event['event'];
+      final eventData = event['data'];
+
+      setState(() {
+        if (eventName == SocketEvents.eventCreated) {
+          final newEvent = Event.fromJson(eventData);
+          if (!_events.any((e) => e.id == newEvent.id)) {
+            _events.add(newEvent);
+          }
+        } else if (eventName == SocketEvents.eventUpdated) {
+          final updatedEvent = Event.fromJson(eventData);
+          final index = _events.indexWhere((e) => e.id == updatedEvent.id);
+          if (index != -1) {
+            _events[index] = updatedEvent;
+            if (_selectedEvent?.id == updatedEvent.id) {
+              _selectedEvent = updatedEvent;
+            }
+          }
+        } else if (eventName == SocketEvents.eventDeleted) {
+          final eventId = eventData['id'];
+          _events.removeWhere((e) => e.id == eventId);
+          if (_selectedEvent?.id == eventId) {
+            _selectedEvent = null;
+            _showDetails = false;
+          }
+        }
+      });
+    });
   }
 
   @override
@@ -360,7 +398,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           padding: EdgeInsets.zero,
                           scrollDirection: Axis.horizontal,
                           itemCount: _selectedEvent!.tags!.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 8),
                           itemBuilder: (_, i) =>
                               _tag(_selectedEvent!.tags![i].name.toUpperCase()),
                         ),
@@ -415,9 +454,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
       case 'pizza':
         return LucideIcons.pizza;
       case 'veggie':
+      case 'vegan':
         return LucideIcons.leaf;
       case 'snack':
+      case 'dessert':
+      case 'desserts':
         return LucideIcons.cookie;
+      case 'bakery':
+        return LucideIcons.croissant;
+      case 'beverage':
+      case 'beverages':
+        return LucideIcons.coffee;
       default:
         return LucideIcons.utensils;
     }

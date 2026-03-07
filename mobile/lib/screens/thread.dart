@@ -7,6 +7,8 @@ import '../theme/theme.dart';
 import '../widgets/header.dart';
 import '../widgets/floating_message_bar.dart';
 
+import '../constants/socket_events.dart';
+import '../services/socket.dart';
 import 'chat.dart';
 
 class ThreadScreen extends StatefulWidget {
@@ -214,8 +216,28 @@ class _ThreadScreenState extends State<ThreadScreen> {
             child: FloatingMessageBar(
               isVisible: _isInputVisible,
               placeholder: 'Reply to thread...',
-              onSend: (msg, files) {
-                print('Sending reply: $msg with ${files.length} files');
+              onSend: (msg, mediaIds) async {
+                if (msg.trim().isNotEmpty || mediaIds.isNotEmpty) {
+                  final messenger = ScaffoldMessenger.of(context);
+                  try {
+                    // Send message and await acknowledgment
+                    await socketService.sendMessage(
+                      SocketEvents.messageCreated,
+                      {
+                        'content': {'text': msg, 'mediaIds': mediaIds},
+                        'threadId': widget.id,
+                      },
+                    );
+
+                    // Optimistic UI update or wait for broadcast
+                    // For now, just a placeholder for the logic
+                  } catch (e) {
+                    if (!mounted) return;
+                    messenger.showSnackBar(
+                      SnackBar(content: Text('Failed to send reply: $e')),
+                    );
+                  }
+                }
               },
             ),
           ),

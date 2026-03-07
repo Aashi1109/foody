@@ -6,6 +6,8 @@ import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../services/event.dart';
 import '../models/event.dart';
+import '../services/socket.dart';
+import '../constants/socket_events.dart';
 
 import 'explore.dart';
 import 'chat.dart';
@@ -50,8 +52,28 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           _event = event;
           _isLoading = false;
         });
+        _connectSocket();
       }
     }
+  }
+
+  void _connectSocket() {
+    socketService.connect(widget.id);
+    socketService.messages.listen((event) {
+      if (!mounted) return;
+
+      final eventName = event['event'];
+      final eventData = event['data'];
+
+      setState(() {
+        if (eventName == SocketEvents.eventUpdated) {
+          final updatedEvent = Event.fromJson(eventData);
+          if (updatedEvent.id == widget.id) {
+            _event = updatedEvent;
+          }
+        }
+      });
+    });
   }
 
   @override

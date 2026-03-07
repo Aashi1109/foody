@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../constants/socket_events.dart';
 import '../theme/theme.dart';
 import '../widgets/floating_message_bar.dart';
 import 'explore.dart';
 import 'thread.dart';
 import '../services/socket.dart';
+import '../models/chat.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -21,27 +23,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isInputVisible = true;
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'name': 'John Doe',
-      'initials': 'JD',
-      'badge': 'Participating',
-      'text': "Has anyone arrived at the park yet? I'm bringing extra napkins!",
-      'time': '10:24 AM',
-    },
-    {
-      'imageUrl': 'https://picsum.photos/seed/grill/600/400',
-      'caption': 'Setting up the grill now! 🔥',
-      'time': '10:30 AM',
-    },
-    {
-      'name': 'Sarah M.',
-      'imageUrl': 'https://picsum.photos/seed/sarah/100/100',
-      'text': "Wow that looks amazing! I'm about 5 mins away.",
-      'time': '10:32 AM',
-      'hasThread': true,
-    },
-  ];
+  bool _isThreadLocked = false;
+  final List<Message> _messages = [];
 
   @override
   void initState() {
@@ -53,23 +36,39 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _connectSocket() async {
     await socketService.connect(widget.id);
     socketService.messages.listen((event) {
-      if (mounted && event['event'] == 'message:created') {
-        final message = event['data'];
-        setState(() {
-          _messages.add({
-            'name': message['user']?['name'] ?? 'Unknown',
-            'text': message['content']?['text'] ?? '',
-            'time': DateFormat('hh:mm a').format(DateTime.now()),
-            'initials':
-                (message['user']?['name'] as String?)
-                    ?.split(' ')
-                    .map((e) => e[0])
-                    .join('') ??
-                '?',
-          });
-        });
-        _scrollToBottom();
-      }
+      if (!mounted) return;
+
+      final eventName = event['event'];
+      final eventData = event['data'];
+
+      setState(() {
+        if (eventName == SocketEvents.messageCreated) {
+          final message = Message.fromJson(eventData);
+          if (!_messages.any((m) => m.id == message.id)) {
+            _messages.add(message);
+            _scrollToBottom();
+          }
+        } else if (eventName == SocketEvents.messageUpdated) {
+          final updatedMsg = Message.fromJson(eventData);
+          final index = _messages.indexWhere((m) => m.id == updatedMsg.id);
+          if (index != -1) {
+            _messages[index] = updatedMsg;
+          }
+        } else if (eventName == SocketEvents.messageDeleted) {
+          final messageId = eventData['id'];
+          _messages.removeWhere((m) => m.id == messageId);
+        } else if (eventName == SocketEvents.threadLocked) {
+          final threadId = eventData['id'];
+          if (threadId == widget.id) {
+            _isThreadLocked = true;
+          }
+        } else if (eventName == SocketEvents.threadUnlocked) {
+          final threadId = eventData['id'];
+          if (threadId == widget.id) {
+            _isThreadLocked = false;
+          }
+        }
+      });
     });
   }
 
@@ -130,7 +129,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     if (index == 0) {
                       return Column(
                         children: [
-                          _buildTimestamp('Today, 10:23 AM'),
+                          _buildTimestamp(
+                            DateFormat(
+                              'MMMM dd, hh:mm a',
+                            ).format(msg.createdAt),
+                          ),
                           const SizedBox(height: 24),
                           _renderMessage(msg),
                         ],
@@ -151,40 +154,21 @@ class _ChatScreenState extends State<ChatScreen> {
             right: 0,
             child: FloatingMessageBar(
               isVisible: _isInputVisible,
-              onSend: (msg, files) async {
-                if (msg.trim().isNotEmpty) {
+              onSend: (msg, mediaIds) async {
+                if (_isThreadLocked) return;
+                if (msg.trim().isNotEmpty || mediaIds.isNotEmpty) {
+                  final messenger = ScaffoldMessenger.of(context);
                   try {
-                    // Send message and await acknowledgment
-                    final response = await socketService.sendMessage(
-                      'message:created',
-                      {
-                        'content': {'text': msg},
-                        'threadId': widget.id, // Assuming widget.id is threadId
-                      },
-                    );
-
-                    print('Server Ack: $response');
-
-                    // Note: In typical socket.io, the server broadcasts back.
-                    // We only add to local list if the server ack is successful OR if we want optimistic UI.
-                    // Given we expect a broadcast back, we might see it twice if we add here.
-                    // Adding "You" optimistically for now.
-                    setState(() {
-                      _messages.add({
-                        'name': 'You',
-                        'initials': 'YO',
-                        'text': msg,
-                        'time': DateFormat('hh:mm a').format(DateTime.now()),
-                      });
+                    // Send message using standardized emit
+                    await socketService.emit(SocketEvents.messageCreated, {
+                      'content': {'text': msg, 'mediaIds': mediaIds},
+                      'threadId': widget.id,
                     });
-                    _scrollToBottom();
                   } catch (e) {
-                    print('Failed to send message: $e');
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to send message: $e')),
-                      );
-                    }
+                    if (!mounted) return;
+                    messenger.showSnackBar(
+                      SnackBar(content: Text('Failed to send message: $e')),
+                    );
                   }
                 }
               },
@@ -324,22 +308,14 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _renderMessage(Map<String, dynamic> msg) {
-    if (msg.containsKey('imageUrl')) {
-      return _buildImageMessage(
-        imageUrl: msg['imageUrl'],
-        caption: msg['caption'],
-        time: msg['time'],
-      );
-    }
+  Widget _renderMessage(Message msg) {
     return _buildMessage(
-      name: msg['name'],
-      initials: msg['initials'],
-      imageUrl: msg['imageUrl'],
-      badge: msg['badge'],
-      text: msg['text'],
-      time: msg['time'],
-      hasThread: msg['hasThread'] ?? false,
+      name: msg.senderName ?? 'User',
+      initials: msg.senderName?.split(' ').map((e) => e[0]).join('') ?? 'U',
+      imageUrl: msg.senderAvatar,
+      text: msg.content,
+      time: DateFormat('hh:mm a').format(msg.createdAt),
+      hasThread: false, // For now
     );
   }
 

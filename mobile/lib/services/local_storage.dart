@@ -37,14 +37,15 @@ class LocalStorage {
     final prefs = await _instance;
     if (value is String) {
       await prefs.setString(k, value);
-    } else if (value is bool)
+    } else if (value is bool) {
       await prefs.setBool(k, value);
-    else if (value is int)
+    } else if (value is int) {
       await prefs.setInt(k, value);
-    else if (value is double)
+    } else if (value is double) {
       await prefs.setDouble(k, value);
-    else if (value is List<String>)
+    } else if (value is List<String>) {
       await prefs.setStringList(k, value);
+    }
   }
 
   Future<T?> get<T>(String key) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/theme.dart';
 import 'router.dart';
 import 'services/local_storage.dart';
@@ -14,7 +15,7 @@ void main() async {
       statusBarBrightness: Brightness.light,
     ),
   );
-  runApp(const FoodyApp());
+  runApp(const ProviderScope(child: FoodyApp()));
 }
 
 class FoodyApp extends StatelessWidget {

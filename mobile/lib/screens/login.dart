@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
+import '../widgets/input.dart';
 import '../widgets/header.dart';
 import '../services/auth.dart';
 
@@ -196,47 +197,45 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 40),
 
                         // Password Input
-                        Container(
-                          height: 64,
-                          decoration: BoxDecoration(
-                            color: AppColors.muted,
-                            borderRadius: BorderRadius.circular(16),
+                        AppInput(
+                          label: 'Password',
+                          placeholder: 'Password',
+                          controller: _passwordController,
+                          obscureText: !_showPassword,
+                          backgroundColor: AppColors.muted,
+                          validations: InputValidations(
+                            required: 'Password is required',
+                            validate: (value) {
+                              if (value == null || value.isEmpty) return null;
+                              final hasUppercase = value.contains(
+                                RegExp(r'[A-Z]'),
+                              );
+                              final hasNumber = value.contains(
+                                RegExp(r'[0-9]'),
+                              );
+                              final hasSpecial = value.contains(
+                                RegExp(r'[^A-Za-z0-9]'),
+                              );
+                              if (value.length < 8 ||
+                                  !hasUppercase ||
+                                  !hasNumber ||
+                                  !hasSpecial) {
+                                return 'Password does not meet requirements';
+                              }
+                              return null;
+                            },
                           ),
-                          child: TextField(
-                            controller: _passwordController,
-                            obscureText: !_showPassword,
-                            onChanged: (_) => setState(() {}),
-                            enabled: !_isLoading,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primary,
+                          onChanged: (_) => setState(() {}),
+                          rightElement: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? LucideIcons.eyeOff
+                                  : LucideIcons.eye,
+                              color: AppColors.mutedForeground,
+                              size: 20,
                             ),
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: const TextStyle(
-                                color: AppColors.mutedForeground,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 20,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _showPassword
-                                      ? LucideIcons.eyeOff
-                                      : LucideIcons.eye,
-                                  color: AppColors.mutedForeground,
-                                  size: 20,
-                                ),
-                                onPressed: () => setState(
-                                  () => _showPassword = !_showPassword,
-                                ),
-                              ),
-                            ),
+                            onPressed: () =>
+                                setState(() => _showPassword = !_showPassword),
                           ),
                         ),
                         const SizedBox(height: 24),

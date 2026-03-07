@@ -1,30 +1,38 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:image_picker/image_picker.dart';
 import '../theme/theme.dart';
 import '../widgets/button.dart';
 import '../widgets/input.dart';
 import '../widgets/header.dart';
 import '../services/event.dart';
+import '../services/file.dart';
 import 'explore.dart';
 import 'success.dart';
 
-class CreateEventScreen extends StatefulWidget {
+class CreateEventScreen extends ConsumerStatefulWidget {
   static const String routePath = '/create';
   const CreateEventScreen({super.key});
 
   @override
-  State<CreateEventScreen> createState() => _CreateEventScreenState();
+  ConsumerState<CreateEventScreen> createState() => _CreateEventScreenState();
 }
 
-class _CreateEventScreenState extends State<CreateEventScreen> {
+class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
 
   bool _isLoading = false;
+  bool _isUploading = false;
   String? _error;
+  String? _mediaId;
+  String? _localMediaPath;
+  bool _isLocalVideo = false;
 
   @override
   void dispose() {
@@ -33,6 +41,103 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     _startTimeController.dispose();
     _endTimeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleMediaSelection() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.image, color: AppColors.primary),
+              title: const Text('Pick Image from Gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.camera, color: AppColors.primary),
+              title: const Text('Take Photo'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.video, color: AppColors.primary),
+              title: const Text('Upload Video (Max 10MB)'),
+              onTap: () async {
+                Navigator.pop(context);
+                await _pickVideo();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source != null) {
+      await _pickImage(source);
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final file = await fileService.pickImage(source: source);
+      if (file != null) {
+        setState(() {
+          _localMediaPath = file.path;
+          _isLocalVideo = false;
+          _isUploading = true;
+          _error = null;
+        });
+
+        final id = await fileService.uploadFile(file);
+        if (mounted) {
+          setState(() {
+            _mediaId = id;
+            _isUploading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _error = e.toString();
+        });
+      }
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    try {
+      final file = await fileService.pickVideo();
+      if (file != null) {
+        setState(() {
+          _localMediaPath = file.path;
+          _isLocalVideo = true;
+          _isUploading = true;
+          _error = null;
+        });
+
+        final id = await fileService.uploadFile(file);
+        if (mounted) {
+          setState(() {
+            _mediaId = id;
+            _isUploading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _error = e.toString();
+        });
+      }
+    }
   }
 
   Future<void> _handleCreate() async {
@@ -57,6 +162,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       'visibility': 'PUBLIC',
       'startTime': startTime.toIso8601String(),
       'endTime': endTime.toIso8601String(),
+      'coverId': _mediaId,
       'location': {
         'latitude': 34.0522,
         'longitude': -118.2437,
@@ -154,63 +260,105 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           ),
                           const SizedBox(height: 16),
                         ],
-                        // [NEW] Image Upload Section
-                        Container(
-                          width: double.infinity,
-                          height: 192,
-                          decoration: BoxDecoration(
-                            color: AppColors.muted,
-                            borderRadius: BorderRadius.circular(32),
-                            border: Border.all(
-                              color: AppColors.border,
-                              width: 2,
-                              style: BorderStyle
-                                  .solid, // Dash would require a custom painter
+                        // Image/Video Upload Section
+                        GestureDetector(
+                          onTap: _isUploading ? null : _handleMediaSelection,
+                          child: Container(
+                            width: double.infinity,
+                            height: 192,
+                            decoration: BoxDecoration(
+                              color: AppColors.muted,
+                              borderRadius: BorderRadius.circular(32),
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: 2,
+                              ),
                             ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0x33000000),
-                                      blurRadius: 12,
-                                      offset: Offset(0, 4),
+                            clipBehavior: Clip.antiAlias,
+                            child: _isUploading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primary,
                                     ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  LucideIcons.uploadCloud,
-                                  size: 24,
-                                  color: AppColors.surface,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'Upload Event Cover',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'TAP OR DRAG IMAGE HERE',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 2,
-                                  color: AppColors.mutedForeground,
-                                ),
-                              ),
-                            ],
+                                  )
+                                : _localMediaPath != null
+                                ? Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      _isLocalVideo
+                                          ? const Center(
+                                              child: Icon(
+                                                LucideIcons.playCircle,
+                                                size: 48,
+                                                color: AppColors.primary,
+                                              ),
+                                            )
+                                          : Image.file(
+                                              File(_localMediaPath!),
+                                              fit: BoxFit.cover,
+                                            ),
+                                      Positioned(
+                                        top: 12,
+                                        right: 12,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black54,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            LucideIcons.edit,
+                                            size: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: const BoxDecoration(
+                                          color: AppColors.primary,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x33000000),
+                                              blurRadius: 12,
+                                              offset: Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(
+                                          LucideIcons.uploadCloud,
+                                          size: 24,
+                                          color: AppColors.surface,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      const Text(
+                                        'Upload Event Cover',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Text(
+                                        'TAP FOR IMAGE OR VIDEO (MAX 10MB)',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 2,
+                                          color: AppColors.mutedForeground,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -390,32 +538,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               // Notes
                               _sectionLabel('Notes'),
                               const SizedBox(height: 8),
-                              Container(
+                              AppInput(
+                                placeholder:
+                                    'Dietary info, access codes, etc...',
                                 height: 128,
-                                decoration: BoxDecoration(
-                                  color: AppColors.muted,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: TextField(
-                                  controller: _descriptionController,
-                                  maxLines: 5,
-                                  decoration: const InputDecoration(
-                                    hintText:
-                                        'Dietary info, access codes, etc...',
-                                    hintStyle: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.mutedForeground,
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.all(16),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
+                                controller: _descriptionController,
+                                maxLines: 5,
+                                backgroundColor: AppColors.muted,
                               ),
                             ],
                           ),
