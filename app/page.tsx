@@ -154,6 +154,9 @@ const AuthScreen = () => {
               <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
+          <Link href="/profile-setup" className="block text-center mt-2">
+            <span className="text-xs font-bold text-primary underline">Complete Profile Setup</span>
+          </Link>
         </div>
 
         <div className="relative flex items-center my-8">

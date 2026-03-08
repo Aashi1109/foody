@@ -1,6 +1,6 @@
 {
   "name": "Foody",
-  "description": "Discover and share free food events in your neighborhood.",
+  "description": "Discover and share free food events in your neighborhood. Set up your profile to join the community.",
   "requestFramePermissions": [
     "geolocation"
   ]
